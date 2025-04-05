@@ -1,5 +1,5 @@
+import 'package:get/get.dart';
+
 class HomeState {
-  HomeState() {
-    ///Initialize variables
-  }
+  final ethAddressRx = ''.obs;
 }

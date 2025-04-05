@@ -28,17 +28,27 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           spacing: 16,
           children: [
+            Obx(() {
+              return ListTile(
+                title: Text('Ethereum'),
+                subtitle: Text(state.ethAddressRx()),
+                trailing: Text('\$0.0'),
+                isThreeLine: true,
+              );
+            }),
             ElevatedButton(
-              onPressed: () async{
-                await G.wallet.deleteWallet();
-                Get.offAllNamed(kPasswordPage);
+              onPressed: () {
+                AuthenticationDialog.show(onSuccess: () async {
+                  await G.wallet.deleteWallet();
+                  Get.offAllNamed(kPasswordPage);
+                });
               },
               child: Text(G.text.deleteWallet),
             ),
-            Obx((){
+            Obx(() {
               return ElevatedButton(
-                onPressed: (){
-                  AuthenticationDialog.show(onSuccess: (){
+                onPressed: () {
+                  AuthenticationDialog.show(onSuccess: () {
                     Get.toNamed(kMnemonicPage);
                   });
                 },

@@ -164,6 +164,11 @@ class WalletService extends GetxService {
     return true;
   }
 
+  ///获取币种默认地址
+  String? getDefaultAddress(TWCoinType coinType){
+    return _wallet?.getAddressForCoin(coinType);
+  }
+
   ///关闭钱包
   void closeWallet() {
     _wallet = null;
