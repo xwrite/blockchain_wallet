@@ -1,23 +1,35 @@
-import 'package:blockchain_wallet/generated/l10n.dart';
 import 'package:blockchain_wallet/global.dart';
+import 'package:blockchain_wallet/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'toast.dart';
-
-///密码对话框
-class PasswordDialog extends StatelessWidget {
+///密码认证对话框
+class AuthenticationDialog extends StatelessWidget {
   static var _visible = false;
 
-  const PasswordDialog._({super.key});
+  const AuthenticationDialog._({super.key});
 
-  static Future<String?> show() async {
+  static Future<bool?> show({VoidCallback? onSuccess}) async {
     if (_visible) {
       return null;
     }
     _visible = true;
-    return Get.dialog<String>(PasswordDialog._(), barrierDismissible: false)
-        .whenComplete(() => _visible = false);
+    final password = await Get.dialog<String>(
+      AuthenticationDialog._(),
+      barrierDismissible: false,
+    ).whenComplete(() => _visible = false);
+
+    if (password == null) {
+      return null;
+    }
+    final result =
+        await Loading.asyncWrapper(G.wallet.authentication(password));
+    if (!result) {
+      Toast.show(G.text.passwordError);
+    }else{
+      onSuccess?.call();
+    }
+    return result;
   }
 
   @override

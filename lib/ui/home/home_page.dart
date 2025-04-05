@@ -2,6 +2,7 @@ import 'package:blockchain_wallet/generated/l10n.dart';
 import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/router/app_routes.dart';
 import 'package:blockchain_wallet/service/wallet_service.dart';
+import 'package:blockchain_wallet/ui/authentication/widget/authentication_dialog.dart';
 import 'package:blockchain_wallet/ui/mnemonic/mnemonic_page.dart';
 import 'package:blockchain_wallet/widget/edge_insets.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,11 @@ class HomePage extends StatelessWidget {
             ),
             Obx((){
               return ElevatedButton(
-                onPressed: MnemonicPage.go,
+                onPressed: (){
+                  AuthenticationDialog.show(onSuccess: (){
+                    Get.toNamed(kMnemonicPage);
+                  });
+                },
                 child: Text('是否已备份助记词（${G.wallet.isBackupMnemonicRx}）'),
               );
             }),
