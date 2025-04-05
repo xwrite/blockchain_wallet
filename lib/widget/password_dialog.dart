@@ -1,3 +1,5 @@
+import 'package:blockchain_wallet/generated/l10n.dart';
+import 'package:blockchain_wallet/global.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -29,21 +31,21 @@ class PasswordDialog extends StatelessWidget {
         keyboardType: TextInputType.visiblePassword,
         onChanged: (val) => password = val,
         decoration: InputDecoration(
-          hintText: '请输入密码',
+          hintText: G.text.passwordRequired,
           counterText: '',
         ),
       ),
       actions: [
-        TextButton(onPressed: Get.back, child: Text('取消')),
+        TextButton(onPressed: Get.back, child: Text(G.text.cancel)),
         TextButton(
           onPressed: () {
             if (password.isEmpty) {
-              Toast.show('请输入密码');
+              Toast.show(G.text.passwordRequired);
               return;
             }
             Get.back(result: password);
           },
-          child: Text('确定'),
+          child: Text(G.text.ok),
         ),
       ],
     );

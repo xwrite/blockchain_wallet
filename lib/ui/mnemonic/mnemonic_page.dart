@@ -1,3 +1,5 @@
+import 'package:blockchain_wallet/generated/l10n.dart';
+import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/router/app_routes.dart';
 import 'package:blockchain_wallet/service/wallet_service.dart';
 import 'package:blockchain_wallet/widget/edge_insets.dart';
@@ -20,10 +22,10 @@ class MnemonicPage extends GetView<MnemonicController> {
       return;
     }
     final result = await Loading.asyncWrapper(
-      Get.find<WalletService>().authentication(password),
+      G.wallet.authentication(password),
     );
     if (!result) {
-      Toast.show('密码错误');
+      Toast.show(G.text.passwordError);
       return;
     }
     Get.toNamed(kMnemonicPage);
@@ -33,7 +35,7 @@ class MnemonicPage extends GetView<MnemonicController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('查看助记词'),
+        title: Text(G.text.mnemonicView),
       ),
       body: SecureWidget(builder: (context, onInit, onDispose){
         return Container(
@@ -52,7 +54,7 @@ class MnemonicPage extends GetView<MnemonicController> {
                   onPressed: () {
                     Get.offNamed(kMnemonicBackupPage);
                   },
-                  child: Text('备份助记词'),
+                  child: Text(G.text.mnemonicBackup),
                 ),
               ),
             ],

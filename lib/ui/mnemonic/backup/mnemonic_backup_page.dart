@@ -1,3 +1,5 @@
+import 'package:blockchain_wallet/generated/l10n.dart';
+import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/widget/edge_insets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,7 +19,7 @@ class MnemonicBackupPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('备份助记词'),
+        title: Text(G.text.mnemonicBackup),
       ),
       body: Obx(() {
         final unselectedWordList = state.unselectedWordListRx();

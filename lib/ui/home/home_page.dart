@@ -1,3 +1,5 @@
+import 'package:blockchain_wallet/generated/l10n.dart';
+import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/router/app_routes.dart';
 import 'package:blockchain_wallet/service/wallet_service.dart';
 import 'package:blockchain_wallet/ui/mnemonic/mnemonic_page.dart';
@@ -16,9 +18,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final walletService = Get.find<WalletService>();
     return Scaffold(
-      appBar: AppBar(title: Text('Blockchain Wallet')),
+      appBar: AppBar(title: Text(G.text.appName)),
       body: Container(
         padding: XEdgeInsets(all: 16),
         alignment: Alignment.center,
@@ -28,15 +29,15 @@ class HomePage extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () async{
-                await walletService.deleteWallet();
+                await G.wallet.deleteWallet();
                 Get.offAllNamed(kPasswordPage);
               },
-              child: Text('删除钱包'),
+              child: Text(G.text.deleteWallet),
             ),
             Obx((){
               return ElevatedButton(
                 onPressed: MnemonicPage.go,
-                child: Text('是否已备份助记词（${walletService.isBackupMnemonicRx}）'),
+                child: Text('是否已备份助记词（${G.wallet.isBackupMnemonicRx}）'),
               );
             }),
           ],

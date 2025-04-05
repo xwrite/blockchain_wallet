@@ -1,4 +1,5 @@
 import 'package:blockchain_wallet/generated/l10n.dart';
+import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/router/app_routes.dart';
 import 'package:blockchain_wallet/service/wallet_service.dart';
 import 'package:blockchain_wallet/widget/loading.dart';
@@ -29,22 +30,22 @@ class PasswordController extends GetxController {
     final password = state.password.trim();
     final passwordAgain = state.passwordAgain.trim();
     if(!_passwordRegex.hasMatch(password)){
-      Toast.show(S.current.passwordTips);
+      Toast.show(G.text.passwordTips);
       return;
     }
     if (passwordAgain.isEmpty) {
-      Toast.show('请再次输入密码');
+      Toast.show(G.text.passwordAgainRequired);
       return;
     }
     if (password != passwordAgain) {
-      Toast.show('两次密码输入不一致');
+      Toast.show(G.text.passwordInputInconsistency);
       return;
     }
     final result = await Loading.asyncWrapper(
-      Get.find<WalletService>().createWallet(password),
+      G.wallet.createWallet(password),
     );
     if(result){
-      Toast.show('密码设置成功');
+      Toast.show(G.text.setPasswordSuccess);
       Get.offAllNamed(kHomePage);
     }
   }

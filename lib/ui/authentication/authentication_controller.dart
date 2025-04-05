@@ -1,3 +1,5 @@
+import 'package:blockchain_wallet/generated/l10n.dart';
+import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/router/app_routes.dart';
 import 'package:blockchain_wallet/service/wallet_service.dart';
 import 'package:blockchain_wallet/widget/loading.dart';
@@ -16,14 +18,14 @@ class AuthenticationController extends GetxController {
   Future<void> onTapVerifyPassword() async {
     final password = state.password.trim();
     if (password.isEmpty) {
-      Toast.show('请输入密码');
+      Toast.show(G.text.passwordRequired);
       return;
     }
     final result = await Loading.asyncWrapper(
-      Get.find<WalletService>().openWallet(password),
+      G.wallet.openWallet(password),
     );
     if (!result) {
-      Toast.show('密码错误');
+      Toast.show(G.text.passwordError);
       return;
     }
 

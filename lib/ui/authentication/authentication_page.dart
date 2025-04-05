@@ -1,5 +1,5 @@
-import 'package:blockchain_wallet/router/app_routes.dart';
-import 'package:blockchain_wallet/service/wallet_service.dart';
+import 'package:blockchain_wallet/generated/l10n.dart';
+import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/ui/authentication/authentication_controller.dart';
 import 'package:blockchain_wallet/widget/widget.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,7 @@ class AuthenticationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('密码验证'),
+        title: Text(G.text.passwordVerify),
       ),
       body: GetBuilder(
         init: AuthenticationController(),
@@ -26,14 +26,14 @@ class AuthenticationPage extends StatelessWidget {
                 buildTextField(
                   isVisiblePassword: state.isPasswordVisible,
                   onToggleVisiblePassword: controller.togglePasswordVisible,
-                  hintText: '请输入密码',
+                  hintText: G.text.passwordRequired,
                   onChanged: (val) => state.password = val,
                 ),
                 Padding(
                   padding: XEdgeInsets(top: 24),
                   child: ElevatedButton(
                     onPressed: controller.onTapVerifyPassword,
-                    child: Text('确定'),
+                    child: Text(G.text.ok),
                   ),
                 ),
               ],

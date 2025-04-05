@@ -1,4 +1,5 @@
 import 'package:blockchain_wallet/generated/l10n.dart';
+import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,7 +14,7 @@ class PasswordPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.current.setWalletPassword),
+        title: Text(G.text.setWalletPassword),
       ),
       body: GetBuilder(
         init: PasswordController(),
@@ -27,21 +28,21 @@ class PasswordPage extends StatelessWidget {
                 buildTextField(
                   isVisiblePassword: state.isPasswordVisible,
                   onToggleVisiblePassword: controller.togglePasswordVisible,
-                  hintText: '请输入密码',
-                  helperText: S.current.passwordTips,
+                  hintText: G.text.passwordRequired,
+                  helperText: G.text.passwordTips,
                   onChanged: (val) => state.password = val,
                 ),
                 buildTextField(
                   isVisiblePassword: state.isPasswordAgainVisible,
                   onToggleVisiblePassword: controller.togglePasswordAgainVisible,
-                  hintText: '请再次输入密码',
+                  hintText: G.text.passwordAgainRequired,
                   onChanged: (val) => state.passwordAgain = val,
                 ),
                 Padding(
                   padding: XEdgeInsets(top: 24),
                   child: ElevatedButton(
                     onPressed: controller.onTapConfirm,
-                    child: Text('创建钱包'),
+                    child: Text(G.text.createWallet),
                   ),
                 ),
               ],

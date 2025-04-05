@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:blockchain_wallet/generated/l10n.dart';
+import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/service/wallet_service.dart';
 import 'package:blockchain_wallet/widget/loading.dart';
 import 'package:blockchain_wallet/widget/toast.dart';
@@ -9,12 +11,11 @@ import 'mnemonic_backup_state.dart';
 
 class MnemonicBackupController extends GetxController {
   final MnemonicBackupState state = MnemonicBackupState();
-  final walletService = Get.find<WalletService>();
 
   @override
   void onInit() {
     super.onInit();
-    final mnemonic = walletService.mnemonic ?? '';
+    final mnemonic = G.wallet.mnemonic ?? '';
     state.wordList.addAll(mnemonic.split(' '));
     state.unselectedWordListRx.value = List.of(state.wordList)
       ..shuffle(Random.secure());
@@ -31,7 +32,7 @@ class MnemonicBackupController extends GetxController {
   void _addItem(String item) async {
     final nextIndex = state.selectedWordListRx.length;
     if (state.wordList[nextIndex] != item) {
-      Toast.show('选的不对');
+      Toast.show(G.text.selectError);
       return;
     }
     state.unselectedWordListRx.remove(item);
@@ -43,17 +44,17 @@ class MnemonicBackupController extends GetxController {
       final mnemonic1 = state.wordList.join(' ');
       final mnemonic2 = state.selectedWordListRx.join(' ');
       if (mnemonic1 != mnemonic2) {
-        Toast.show('助记词备份失败');
+        Toast.show(G.text.mnemonicBackupFailed);
         return;
       }
 
       final result =
-      await Loading.asyncWrapper(walletService.backupMnemonic(mnemonic1));
+      await Loading.asyncWrapper(G.wallet.backupMnemonic(mnemonic1));
       if(result){
-        Toast.show('助记词备份成功');
+        Toast.show(G.text.mnemonicBackupSuccess);
         Get.back(result: true);
       }else{
-        Toast.show('助记词备份失败');
+        Toast.show(G.text.mnemonicBackupFailed);
       }
     }
   }

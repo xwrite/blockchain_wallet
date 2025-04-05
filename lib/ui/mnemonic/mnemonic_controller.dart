@@ -1,5 +1,4 @@
-import 'package:blockchain_wallet/common/util/logger.dart';
-import 'package:blockchain_wallet/service/wallet_service.dart';
+import 'package:blockchain_wallet/global.dart';
 import 'package:get/get.dart';
 
 import 'mnemonic_state.dart';
@@ -10,7 +9,7 @@ class MnemonicController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    state.mnemonicRx.value = Get.find<WalletService>().mnemonic ?? '';
+    state.mnemonicRx.value = G.wallet.mnemonic ?? '';
   }
 
 }

@@ -1,8 +1,7 @@
+import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/router/app_routes.dart';
-import 'package:blockchain_wallet/service/wallet_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/src/root/parse_route.dart';
 
 class AuthMiddleware extends GetMiddleware {
 
@@ -17,11 +16,10 @@ class AuthMiddleware extends GetMiddleware {
     ].contains(route)){
       return null;
     }
-    final walletService = Get.find<WalletService>();
-    if(walletService.isOpen){
+    if(G.wallet.isOpen){
       return null;
     }
-    if(walletService.hasWallet){
+    if(G.wallet.hasWallet){
       //有钱包，没打开就要输密码
       return const RouteSettings(name: kAuthenticationPage);
     }else{

@@ -1,3 +1,4 @@
+import 'package:blockchain_wallet/widget/edge_insets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
@@ -6,6 +7,8 @@ class Loading {
 
   static TransitionBuilder init({TransitionBuilder? builder}) {
     EasyLoading.instance
+      ..contentPadding = XEdgeInsets(all: 24)
+      ..indicatorSize = 48
       ..userInteractions = false
       ..dismissOnTap = true;
     return EasyLoading.init(builder: builder);
