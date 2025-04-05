@@ -1,39 +1,47 @@
-import 'package:blockchain_wallet/router/app_routes.dart';
-import 'package:blockchain_wallet/service/wallet_service.dart';
-import 'package:blockchain_wallet/ui/authentication/authentication_controller.dart';
+import 'package:blockchain_wallet/generated/l10n.dart';
 import 'package:blockchain_wallet/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-///密码认证
-class AuthenticationPage extends StatelessWidget {
-  const AuthenticationPage({super.key});
+import 'password_controller.dart';
+
+///设置钱包密码
+class PasswordPage extends StatelessWidget {
+  const PasswordPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('密码验证'),
+        title: Text(S.current.setWalletPassword),
       ),
       body: GetBuilder(
-        init: AuthenticationController(),
+        init: PasswordController(),
         builder: (controller){
           final state = controller.state;
           return Padding(
             padding: XEdgeInsets(all: 16),
             child: Column(
+              spacing: 8,
               children: [
                 buildTextField(
                   isVisiblePassword: state.isPasswordVisible,
                   onToggleVisiblePassword: controller.togglePasswordVisible,
                   hintText: '请输入密码',
+                  helperText: S.current.passwordTips,
                   onChanged: (val) => state.password = val,
+                ),
+                buildTextField(
+                  isVisiblePassword: state.isPasswordAgainVisible,
+                  onToggleVisiblePassword: controller.togglePasswordAgainVisible,
+                  hintText: '请再次输入密码',
+                  onChanged: (val) => state.passwordAgain = val,
                 ),
                 Padding(
                   padding: XEdgeInsets(top: 24),
                   child: ElevatedButton(
-                    onPressed: controller.onTapVerifyPassword,
-                    child: Text('确定'),
+                    onPressed: controller.onTapConfirm,
+                    child: Text('创建钱包'),
                   ),
                 ),
               ],
@@ -46,6 +54,7 @@ class AuthenticationPage extends StatelessWidget {
 
   Widget buildTextField({
     String? hintText,
+    String? helperText,
     bool isVisiblePassword = false,
     VoidCallback? onToggleVisiblePassword,
     ValueChanged<String>? onChanged,
@@ -58,6 +67,7 @@ class AuthenticationPage extends StatelessWidget {
       decoration: InputDecoration(
           hintText: hintText,
           counterText: '',
+          helperText: helperText,
           suffixIcon: IconButton(
             onPressed: onToggleVisiblePassword,
             icon: Icon(

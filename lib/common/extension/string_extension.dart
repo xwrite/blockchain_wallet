@@ -9,4 +9,9 @@ extension StringExtension on String{
     return Uri(path: this, queryParameters: queryParameters).toString();
   }
 
+  /// 16进制字符串转为字节数组
+  Uint8List toUint8List(){
+    return Uint8List.fromList(HEX.decode(this));
+  }
+
 }

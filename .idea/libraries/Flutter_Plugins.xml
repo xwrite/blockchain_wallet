@@ -18,6 +18,9 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/path_provider_android-2.2.16" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_secure_storage_web-1.2.1" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_secure_storage-9.2.4" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/secure_content-1.0.0" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/screen_protector-1.4.2+1" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/screen_capture_event-1.2.0" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

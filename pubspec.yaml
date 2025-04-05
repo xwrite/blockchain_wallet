@@ -14,15 +14,11 @@ dependencies:
     sdk: flutter
   intl_utils: ^2.8.10
   cupertino_icons: ^1.0.8
-  flutter_bloc: ^9.1.0
-  freezed_annotation: ^3.0.0
   equatable: ^2.0.7
-  go_router: ^14.8.1
   wallet_core_bindings: ^4.2.18
   wallet_core_bindings_native: ^4.2.18
   wallet_core_bindings_libs: ^4.2.18
   logger: ^2.5.0
-  get_it: ^8.0.3
   biometric_storage: ^5.0.1
   shared_preferences: ^2.5.3
   flutter_secure_storage: ^9.2.4
@@ -30,13 +26,14 @@ dependencies:
   fluttertoast: ^8.2.12
   pointycastle: ^4.0.0 #加密算法库
   hex: ^0.2.0
+  get: ^4.7.2
+  secure_content: ^1.0.0
+  flutter_portal: ^1.1.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-  build_runner: ^2.4.15
-  freezed: ^3.0.4
 
 flutter:
   uses-material-design: true

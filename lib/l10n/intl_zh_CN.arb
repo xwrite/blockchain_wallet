@@ -1,4 +1,5 @@
 {
   "appName": "区块链钱包",
-  "setWalletPassword": "设置钱包密码"
+  "setWalletPassword": "设置钱包密码",
+  "passwordTips": "不少于8个字符，必须包含大小写字母、数字"
 }

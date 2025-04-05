@@ -19,4 +19,11 @@ class Loading {
     return EasyLoading.dismiss();
   }
 
+  static Future<R> asyncWrapper<R>(Future<R> future) async{
+    await show();
+    final result = await future;
+    await dismiss();
+    return result;
+  }
+
 }
