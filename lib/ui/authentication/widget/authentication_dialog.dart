@@ -43,7 +43,7 @@ class AuthenticationDialog extends StatelessWidget {
         keyboardType: TextInputType.visiblePassword,
         onChanged: (val) => password = val,
         decoration: InputDecoration(
-          hintText: G.text.passwordRequired,
+          labelText: G.text.passwordRequired,
           counterText: '',
         ),
       ),

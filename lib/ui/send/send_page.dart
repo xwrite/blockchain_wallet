@@ -1,3 +1,5 @@
+import 'package:blockchain_wallet/common/extension/amount_format_extension.dart';
+import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/widget/edge_insets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,6 +20,42 @@ class SendPage extends StatelessWidget {
       appBar: AppBar(title: Text('转账')),
       body: Container(
         padding: XEdgeInsets(all: 16),
+        child: Obx(() {
+          final balanceText = state.balanceRx().formatEth(accuracy: 8);
+          final amount = state.amountRx();
+          final feeText = controller.feeRx.formatEth(accuracy: 8);
+          final isReadySend = controller.isReadySendRx;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 16,
+            children: [
+              Text('余额：$balanceText'),
+              TextField(
+                decoration: InputDecoration(labelText: '接收地址'),
+                onChanged: state.receiveAddressRx.call,
+              ),
+              TextField(
+                controller: controller.amountEditingController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: amount == BigInt.zero
+                      ? '数量（ETH）'
+                      : '数量（${amount.formatEth(accuracy: 8)}）',
+                  suffixIcon: TextButton(onPressed: controller.onTapAll, child: Text('全部余额'))
+                ),
+              ),
+              Text('矿工费：$feeText'),
+              Container(
+                padding: XEdgeInsets(top: 24),
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  onPressed:  isReadySend ? controller.onTapSend : null,
+                  child: Text(G.text.ok),
+                ),
+              ),
+            ],
+          );
+        }),
       ),
     );
   }

@@ -179,8 +179,13 @@ class WalletService extends GetxService {
   }
 
   ///获取币种默认地址
-  String? getDefaultAddress(TWCoinType coinType){
-    return _wallet?.getAddressForCoin(coinType);
+  String? getDefaultAddress(){
+    return _wallet?.getAddressForCoin(TWCoinType.Ethereum);
+  }
+
+  ///获取默认地址私钥
+  Uint8List? getDefaultPrivateKey(){
+    return _wallet?.getKeyForCoin(TWCoinType.Ethereum).data;
   }
 
   ///关闭钱包

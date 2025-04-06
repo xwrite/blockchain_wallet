@@ -33,7 +33,7 @@ class AuthenticationPage extends StatelessWidget {
                   buildTextField(
                     isVisiblePassword: isPasswordVisible,
                     onToggleVisiblePassword: state.isPasswordVisibleRx.toggle,
-                    hintText: G.text.passwordRequired,
+                    labelText: G.text.passwordRequired,
                     onChanged: (val) => state.password = val,
                   ),
                   Padding(
@@ -53,7 +53,7 @@ class AuthenticationPage extends StatelessWidget {
   }
 
   Widget buildTextField({
-    String? hintText,
+    String? labelText,
     bool isVisiblePassword = false,
     VoidCallback? onToggleVisiblePassword,
     ValueChanged<String>? onChanged,
@@ -64,7 +64,7 @@ class AuthenticationPage extends StatelessWidget {
       keyboardType: TextInputType.visiblePassword,
       onChanged: onChanged,
       decoration: InputDecoration(
-          hintText: hintText,
+          labelText: labelText,
           counterText: '',
           suffixIcon: IconButton(
             onPressed: onToggleVisiblePassword,

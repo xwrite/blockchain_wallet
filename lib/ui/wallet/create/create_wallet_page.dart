@@ -33,14 +33,14 @@ class CreateWalletPage extends StatelessWidget {
                 buildTextField(
                   isVisiblePassword: isPasswordVisible,
                   onToggleVisiblePassword: state.isPasswordVisibleRx.toggle,
-                  hintText: G.text.passwordRequired,
+                  labelText: G.text.passwordRequired,
                   helperText: G.text.passwordTips,
                   onChanged: (val) => state.password = val,
                 ),
                 buildTextField(
                   isVisiblePassword: isPasswordAgainVisible,
                   onToggleVisiblePassword: state.isPasswordAgainVisibleRx.toggle,
-                  hintText: G.text.passwordAgainRequired,
+                  labelText: G.text.passwordAgainRequired,
                   onChanged: (val) => state.passwordAgain = val,
                 ),
                 Padding(
@@ -59,7 +59,7 @@ class CreateWalletPage extends StatelessWidget {
   }
 
   Widget buildTextField({
-    String? hintText,
+    String? labelText,
     String? helperText,
     bool isVisiblePassword = false,
     VoidCallback? onToggleVisiblePassword,
@@ -71,7 +71,7 @@ class CreateWalletPage extends StatelessWidget {
       keyboardType: TextInputType.visiblePassword,
       onChanged: onChanged,
       decoration: InputDecoration(
-          hintText: hintText,
+          labelText: labelText,
           counterText: '',
           helperText: helperText,
           suffixIcon: IconButton(

@@ -1,3 +1,4 @@
+import 'package:blockchain_wallet/common/extension/amount_format_extension.dart';
 import 'package:blockchain_wallet/generated/l10n.dart';
 import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/router/app_routes.dart';
@@ -31,8 +32,8 @@ class HomePage extends StatelessWidget {
             Obx(() {
               return ListTile(
                 title: Text('Ethereum'),
-                subtitle: Text(state.ethAddressRx()),
-                trailing: Text(state.ethBalanceRx()),
+                subtitle: Text(state.addressRx()),
+                trailing: Text(state.balanceRx().formatEth()),
                 isThreeLine: true,
               );
             }),
@@ -41,7 +42,7 @@ class HomePage extends StatelessWidget {
               child: Text('刷新余额'),
             ),
             ElevatedButton(
-              onPressed: controller.fetchBalance,
+              onPressed: () => Get.toNamed(kSendPage),
               child: Text('转账'),
             ),
             ElevatedButton(

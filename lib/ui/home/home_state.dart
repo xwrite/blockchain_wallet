@@ -1,6 +1,10 @@
 import 'package:get/get.dart';
 
 class HomeState {
-  final ethAddressRx = ''.obs;
-  final ethBalanceRx = ''.obs;
+
+  ///地址
+  final addressRx = ''.obs;
+
+  ///余额
+  final balanceRx = BigInt.zero.obs;
 }

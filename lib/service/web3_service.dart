@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 
 import 'package:blockchain_wallet/app_config.dart';
 import 'package:blockchain_wallet/common/util/logger.dart';
@@ -7,20 +8,58 @@ import 'package:web3dart/web3dart.dart';
 import 'package:wallet/wallet.dart';
 
 ///节点连接服务
-class Web3Service extends GetxService{
+class Web3Service extends GetxService {
+  ///转账标准gas Limit
+  final gasLimit = BigInt.from(21000);
 
   final _client = Web3Client(AppConfig.ethNetworkUrl, Client());
 
-  Future<BigInt?> getBalance(String hexAddress) async{
-    try{
+  Future<BigInt?> getBalance(String hexAddress) async {
+    try {
       final address = EthereumAddress.fromHex(hexAddress);
-      final balance = await _client.getBalance(address);
-      logger.d('balance: ether=${balance.getInEther}  ,wei=${balance.getInWei}');
-      return balance.getInEther;
-    }catch(ex){
+      final amount = await _client.getBalance(address);
+      return amount.getInWei;
+    } catch (ex) {
       logger.w(ex);
       return null;
     }
   }
 
+  Future<BigInt?> getGasPrice() async {
+    try {
+      final amount = await _client.getGasPrice();
+      return amount.getInWei;
+    } catch (ex) {
+      logger.w(ex);
+      return null;
+    }
+  }
+
+  ///转账
+  Future<String?> sendTransaction({
+    required Uint8List privateKey,
+    required String receiveAddress,
+    required BigInt gasPrice,
+    required BigInt amount,
+  }) async {
+    try {
+      final credentials = EthPrivateKey(privateKey);
+      final chainId = await _client.getChainId();
+      final result = await _client.sendTransaction(
+        credentials,
+        Transaction(
+          to: EthereumAddress.fromHex(receiveAddress),
+          maxGas: gasLimit.toInt(),
+          gasPrice: EtherAmount.fromBigInt(EtherUnit.wei, gasPrice),
+          value: EtherAmount.fromBigInt(EtherUnit.wei, amount),
+        ),
+        chainId: chainId.toInt(),
+      );
+      logger.d('sendTransaction: $result');
+      return result;
+    } catch (ex) {
+      logger.w(ex);
+      return null;
+    }
+  }
 }
