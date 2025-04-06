@@ -4,10 +4,16 @@ import 'package:blockchain_wallet/ui/authentication/authentication_controller.da
 import 'package:blockchain_wallet/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:secure_content/secure_content.dart';
+
+import 'authentication_state.dart';
 
 ///密码认证
 class AuthenticationPage extends StatelessWidget {
-  const AuthenticationPage({super.key});
+  AuthenticationPage({super.key});
+
+  AuthenticationController controller = Get.put(AuthenticationController());
+  final AuthenticationState state = Get.find<AuthenticationController>().state;
 
   @override
   Widget build(BuildContext context) {
@@ -15,30 +21,32 @@ class AuthenticationPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(G.text.passwordVerify),
       ),
-      body: GetBuilder(
-        init: AuthenticationController(),
-        builder: (controller){
-          final state = controller.state;
-          return Padding(
-            padding: XEdgeInsets(all: 16),
-            child: Column(
-              children: [
-                buildTextField(
-                  isVisiblePassword: state.isPasswordVisible,
-                  onToggleVisiblePassword: controller.togglePasswordVisible,
-                  hintText: G.text.passwordRequired,
-                  onChanged: (val) => state.password = val,
-                ),
-                Padding(
-                  padding: XEdgeInsets(top: 24),
-                  child: ElevatedButton(
-                    onPressed: controller.onTapVerifyPassword,
-                    child: Text(G.text.ok),
+      body: SecureWidget(
+        isSecure: true,
+        builder: (_, __, ___){
+          return Obx((){
+            final isPasswordVisible = state.isPasswordVisibleRx();
+            return Padding(
+              padding: XEdgeInsets(all: 16),
+              child: Column(
+                children: [
+                  buildTextField(
+                    isVisiblePassword: isPasswordVisible,
+                    onToggleVisiblePassword: state.isPasswordVisibleRx.toggle,
+                    hintText: G.text.passwordRequired,
+                    onChanged: (val) => state.password = val,
                   ),
-                ),
-              ],
-            ),
-          );
+                  Padding(
+                    padding: XEdgeInsets(top: 24),
+                    child: ElevatedButton(
+                      onPressed: controller.onTapVerifyPassword,
+                      child: Text(G.text.ok),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          });
         },
       ),
     );

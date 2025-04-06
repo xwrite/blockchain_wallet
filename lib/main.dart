@@ -8,6 +8,8 @@ import 'package:wallet_core_bindings_native/wallet_core_bindings_native.dart';
 import 'generated/l10n.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 
+import 'service/web3_service.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await init();
@@ -19,7 +21,7 @@ Future<void> init() async {
 
   //注入服务
   await Get.putAsync(WalletService.create, permanent: true);
-
+  Get.put(Web3Service(), permanent: true);
 }
 
 class WalletApp extends StatelessWidget {

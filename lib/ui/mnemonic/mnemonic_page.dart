@@ -8,8 +8,10 @@ import 'package:secure_content/secure_content.dart';
 import 'mnemonic_controller.dart';
 
 ///查看助记词
-class MnemonicPage extends GetView<MnemonicController> {
-  const MnemonicPage({super.key});
+class MnemonicPage extends StatelessWidget {
+  MnemonicPage({super.key});
+
+  final MnemonicController controller = Get.put(MnemonicController());
 
   @override
   Widget build(BuildContext context) {

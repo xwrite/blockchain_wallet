@@ -11,5 +11,16 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     state.ethAddressRx.value = G.wallet.getDefaultAddress(TWCoinType.Ethereum) ?? '';
+    fetchBalance();
+  }
+
+  void fetchBalance() async{
+    final address = state.ethAddressRx();
+    if(address.isNotEmpty){
+      final balance = await G.web3.getBalance(state.ethAddressRx());
+      if(balance != null){
+        state.ethBalanceRx.value = balance.toRadixString(10);
+      }
+    }
   }
 }

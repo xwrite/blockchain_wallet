@@ -32,15 +32,23 @@ class HomePage extends StatelessWidget {
               return ListTile(
                 title: Text('Ethereum'),
                 subtitle: Text(state.ethAddressRx()),
-                trailing: Text('\$0.0'),
+                trailing: Text(state.ethBalanceRx()),
                 isThreeLine: true,
               );
             }),
             ElevatedButton(
+              onPressed: controller.fetchBalance,
+              child: Text('刷新余额'),
+            ),
+            ElevatedButton(
+              onPressed: controller.fetchBalance,
+              child: Text('转账'),
+            ),
+            ElevatedButton(
               onPressed: () {
                 AuthenticationDialog.show(onSuccess: () async {
                   await G.wallet.deleteWallet();
-                  Get.offAllNamed(kPasswordPage);
+                  Get.offAllNamed(kWalletPage);
                 });
               },
               child: Text(G.text.deleteWallet),

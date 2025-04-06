@@ -1,12 +1,10 @@
 import 'dart:convert';
-
 import 'package:blockchain_wallet/common/util/encrypt_util.dart';
+import 'package:blockchain_wallet/common/util/logger.dart';
 import 'package:blockchain_wallet/common/util/secure_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:wallet_core_bindings/wallet_core_bindings.dart';
-
-import '../common/util/logger.dart' show logger;
 
 ///钱包服务
 class WalletService extends GetxService {
@@ -86,9 +84,25 @@ class WalletService extends GetxService {
   }
 
   ///通过密码创建钱包
-  Future<bool> createWallet(String password) async {
-    //创建钱包
-    final wallet = TWHDWallet(passphrase: password);
+  Future<bool> createWallet(String password) {
+    return _createWallet(password: password);
+  }
+
+  ///通过助记词导入钱包
+  Future<bool> importWallet({required String mnemonic, required String password}) {
+    return _createWallet(mnemonic: mnemonic, password: password);
+  }
+
+  ///创建钱包
+  Future<bool> _createWallet({final String? mnemonic, required String password}) async {
+
+    //创建
+    final TWHDWallet wallet;
+    if(mnemonic != null){
+      wallet = TWHDWallet.createWithMnemonic(mnemonic);
+    }else{
+      wallet = TWHDWallet();
+    }
 
     //使用AES保存密码和助记词
     final result = await compute((args) {
@@ -150,7 +164,7 @@ class WalletService extends GetxService {
     if (mnemonic == null) {
       return false;
     }
-    _wallet = TWHDWallet.createWithMnemonic(mnemonic, passphrase: password);
+    _wallet = TWHDWallet.createWithMnemonic(mnemonic);
     return true;
   }
 

@@ -1,5 +1,7 @@
 
+import 'package:get/get.dart';
+
 class AuthenticationState{
-  bool isPasswordVisible = false;
+  final isPasswordVisibleRx = false.obs;
   String password = '123abcABC';
 }

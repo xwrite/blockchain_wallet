@@ -10,11 +10,6 @@ import 'authentication_state.dart';
 class AuthenticationController extends GetxController {
   final state = AuthenticationState();
 
-  void togglePasswordVisible() {
-    state.isPasswordVisible = !state.isPasswordVisible;
-    update();
-  }
-
   Future<void> onTapVerifyPassword() async {
     final password = state.password.trim();
     if (password.isEmpty) {
