@@ -8,8 +8,8 @@ import 'package:wallet_core_bindings/wallet_core_bindings.dart';
 
 ///钱包服务
 class WalletService extends GetxService {
-  static const _kWalletSecretKeyInfo = '_kWalletSecretKeyInfo';
-  static const _kBackupMnemonic = '_kBackupMnemonic';
+  static const _kWalletEncryptedInfo = '_kWalletEncryptedInfo';
+  static const _kBackupMnemonicTag = '_kBackupMnemonicTag';
   var _hasWallet = false;
   final RxBool _isBackupMnemonicRx;
 
@@ -21,8 +21,8 @@ class WalletService extends GetxService {
       : _isBackupMnemonicRx = isBackupMnemonic.obs;
 
   static Future<WalletService> create() async {
-    final info = await _store.read(_kWalletSecretKeyInfo);
-    final backup = await _store.read(_kBackupMnemonic);
+    final info = await _store.read(_kWalletEncryptedInfo);
+    final backup = await _store.read(_kBackupMnemonicTag);
     return WalletService._(info != null, backup != null);
   }
 
@@ -40,32 +40,42 @@ class WalletService extends GetxService {
 
   ///认证密码是否正确
   Future<bool> authentication(String password) async{
-    return await getMnemonic(password) != null;
+    final info = await _getEncryptedInfo();
+    if(info != null){
+      final hash = TWHash.keccak256(utf8.encode(password));
+      return EncryptUtil.toHexString(hash) == info.passwordHash;
+    }
+    return false;
   }
 
-  ///获取助记词
-  Future<String?> getMnemonic(String password) async{
-    final infoStr = await _store.read(_kWalletSecretKeyInfo);
+  ///钱包加密信息
+  Future<WalletEncryptedInfo?> _getEncryptedInfo() async{
+    final infoStr = await _store.read(_kWalletEncryptedInfo);
     if (infoStr == null) {
       logger.d('钱包不存在');
       return null;
     }
-    final info = WalletSecretKeyInfo.fromJsonString(infoStr);
+    return WalletEncryptedInfo.fromJsonString(infoStr);
+  }
+
+  ///获取助记词
+  Future<String?> _getMnemonic(String password) async{
+    final info = await _getEncryptedInfo();
     if (info == null) {
       logger.d('钱包不存在');
       return null;
     }
 
     return compute((args) {
-      final info = args[0] as WalletSecretKeyInfo;
+      final info = args[0] as WalletEncryptedInfo;
       final password = args[1] as String;
       final passwordBytes = utf8.encode(password);
 
       //使用密码短语派生AES密钥
-      final pbkdf2Salt = EncryptUtil.fromHexString(info.salt);
+      final salt = EncryptUtil.fromHexString(info.salt);
       final aesKey = EncryptUtil.deriveKeyWithArgon2(
         password: passwordBytes,
-        salt: pbkdf2Salt,
+        salt: salt,
         iterations: 3,
       );
 
@@ -108,48 +118,37 @@ class WalletService extends GetxService {
     final result = await compute((args) {
       final passwordBytes = utf8.encode(args[0]);
       final mnemonicBytes = utf8.encode(args[1]);
-      final stopwatch = Stopwatch()..start();
 
       //使用密码短语派生AES密钥
-      final pbkdf2Salt = EncryptUtil.generateKey(16);
-      stopwatch.stop();
-      logger.d('EncryptUtil.generateKey: ${stopwatch.elapsed}');
-
-      stopwatch
-        ..reset()
-        ..start();
+      final salt = EncryptUtil.generateKey(16);
       final aesKey = EncryptUtil.deriveKeyWithArgon2(
         password: passwordBytes,
-        salt: pbkdf2Salt,
+        salt: salt,
         iterations: 3,
       );
-      stopwatch.stop();
-      logger.d('deriveKeyWithArgon2: ${stopwatch.elapsed}');
 
       //AES加密助记词
       final aesNonce = EncryptUtil.generateKey(16);
-
-      stopwatch
-        ..reset()
-        ..start();
       final encryptedMnemonic = EncryptUtil.aesGcmEncrypt(
         key: aesKey,
         data: mnemonicBytes,
         nonce: aesNonce,
       );
-      stopwatch.stop();
-      logger.d('aesGcmEncrypt: ${stopwatch.elapsed}');
 
-      //加密助记词，pbkdf2Salt，aesNonce，
-      return WalletSecretKeyInfo(
-        encryptedMnemonic: EncryptUtil.toHexString(encryptedMnemonic),
-        salt: EncryptUtil.toHexString(pbkdf2Salt),
+      //密码哈希
+      final passwordHash = TWHash.keccak256(passwordBytes);
+
+      return WalletEncryptedInfo(
+        salt: EncryptUtil.toHexString(salt),
         nonce: EncryptUtil.toHexString(aesNonce),
+        encryptedMnemonic: EncryptUtil.toHexString(encryptedMnemonic),
+        passwordHash: EncryptUtil.toHexString(passwordHash),
       );
     }, [password, wallet.mnemonic]);
 
     //保存
-    await _store.write(_kWalletSecretKeyInfo, result.toJsonString());
+    await _store.write(_kWalletEncryptedInfo, result.toJsonString());
+
     _wallet = wallet;
     _hasWallet = true;
     return true;
@@ -158,7 +157,7 @@ class WalletService extends GetxService {
   ///通过密码打开钱包
   Future<bool> openWallet(String password) async {
 
-    final mnemonic = await getMnemonic(password);
+    final mnemonic = await _getMnemonic(password);
 
     //密码不对,解密失败
     if (mnemonic == null) {
@@ -173,7 +172,7 @@ class WalletService extends GetxService {
     if (_wallet?.mnemonic != mnemonic) {
       return false;
     }
-    await _store.write(_kBackupMnemonic, 'backup');
+    await _store.write(_kBackupMnemonicTag, 'backup');
     _isBackupMnemonicRx.value = true;
     return true;
   }
@@ -195,8 +194,8 @@ class WalletService extends GetxService {
 
   ///删除钱包
   Future<void> deleteWallet() async {
-    await _store.delete(_kWalletSecretKeyInfo);
-    await _store.delete(_kBackupMnemonic);
+    await _store.delete(_kWalletEncryptedInfo);
+    await _store.delete(_kBackupMnemonicTag);
     _wallet?.delete();
     _wallet = null;
     _hasWallet = false;
@@ -205,8 +204,8 @@ class WalletService extends GetxService {
 }
 
 ///钱包密钥信息
-class WalletSecretKeyInfo {
-  ///PBKDF2的盐
+class WalletEncryptedInfo {
+  ///盐
   final String salt;
 
   ///AES的nonce
@@ -215,20 +214,25 @@ class WalletSecretKeyInfo {
   ///AES加密后的助记词
   final String encryptedMnemonic;
 
-  WalletSecretKeyInfo({
+  ///密码hash（keccak256）
+  final String passwordHash;
+
+  WalletEncryptedInfo({
     required this.salt,
     required this.nonce,
     required this.encryptedMnemonic,
+    required this.passwordHash,
   });
 
-  static WalletSecretKeyInfo? fromJsonString(String jsonStr) {
+  static WalletEncryptedInfo? fromJsonString(String jsonStr) {
     try {
       final json = jsonDecode(jsonStr);
       if (json is Map) {
-        return WalletSecretKeyInfo(
+        return WalletEncryptedInfo(
           salt: json['s'],
           nonce: json['n'],
           encryptedMnemonic: json['m'],
+          passwordHash: json['p'],
         );
       }
     } catch (ex) {
@@ -242,6 +246,7 @@ class WalletSecretKeyInfo {
       's': salt,
       'n': nonce,
       'm': encryptedMnemonic,
+      'p': passwordHash,
     });
   }
 }

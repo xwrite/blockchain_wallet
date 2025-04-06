@@ -101,7 +101,7 @@ class SendController extends GetxController with GetAutoDisposeMixin {
       Toast.show('当前无法发送交易');
       return;
     }
-    final result = await Loading.asyncWrapper(G.web3.sendTransaction(
+    final result = await Loading.asyncWrapper(G.web3.transfer(
       privateKey: privateKey,
       receiveAddress: state.receiveAddressRx(),
       gasPrice: state.gasPriceRx(),

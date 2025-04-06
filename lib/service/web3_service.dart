@@ -23,6 +23,7 @@ class Web3Service extends GetxService {
       logger.w(ex);
       return null;
     }
+
   }
 
   Future<BigInt?> getGasPrice() async {
@@ -36,7 +37,8 @@ class Web3Service extends GetxService {
   }
 
   ///转账
-  Future<String?> sendTransaction({
+  ///- returns 成功返回交易hash
+  Future<String?> transfer({
     required Uint8List privateKey,
     required String receiveAddress,
     required BigInt gasPrice,
