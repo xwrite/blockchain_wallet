@@ -14,11 +14,11 @@ class ImportWalletController extends GetxController {
     final password = state.password.trim();
     final passwordAgain = state.passwordAgain.trim();
 
-    if(!TWMnemonic.isValid(mnemonic)){
+    if (!TWMnemonic.isValid(mnemonic)) {
       Toast.show('请输入有效的助记词(BIP-39)');
       return;
     }
-    if(!PasswordUtil.isValid(password)){
+    if (!PasswordUtil.isValid(password)) {
       Toast.show(G.text.passwordTips);
       return;
     }
@@ -31,11 +31,10 @@ class ImportWalletController extends GetxController {
       return;
     }
     final result = await Loading.asyncWrapper(
-      G.wallet.importWallet(mnemonic: mnemonic, password: password),
+      () => G.wallet.importWallet(mnemonic: mnemonic, password: password),
     );
-    if(result){
+    if (result) {
       Get.offAllNamed(kHomePage);
     }
   }
-
 }

@@ -22,11 +22,12 @@ class AuthenticationDialog extends StatelessWidget {
     if (password == null) {
       return null;
     }
-    final result =
-        await Loading.asyncWrapper(G.wallet.authentication(password));
+    final result = await Loading.asyncWrapper(
+      () => G.wallet.authentication(password),
+    );
     if (!result) {
       Toast.show(G.text.passwordError);
-    }else{
+    } else {
       onSuccess?.call();
     }
     return result;

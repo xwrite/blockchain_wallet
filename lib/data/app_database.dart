@@ -1,19 +1,20 @@
 
 import 'dart:async';
-
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-
-import 'transaction_dao.dart';
+import 'dao/address_dao.dart';
+import 'dao/transaction_dao.dart';
 
 
 ///数据库
 class AppDatabase {
   AppDatabase._();
+  factory AppDatabase() => _instance ??= AppDatabase._();
 
-  static final instance = AppDatabase._();
+  static AppDatabase? _instance;
   late Database _database;
   late TransactionDao _transactionDao;
+  late AddressDao _addressDao;
   var _isInitialize = false;
 
   ///初始化数据库
@@ -26,15 +27,23 @@ class AppDatabase {
 
       //init dao
       _transactionDao = TransactionDao(_database);
+      _addressDao = AddressDao(_database);
     }
     return _database;
   }
 
   ///数据库创建时，创建数据库表
   Future<void> _onCreate(Database db, int version) async {
-    await TransactionDao(db).createTable();
+    await TransactionDao.createTable(db);
+    await AddressDao.createTable(db);
   }
 
   TransactionDao get transactionDao => _transactionDao;
 
+  AddressDao get addressDao => _addressDao;
+
+  ///删除数据库
+  Future<void> delete() {
+    return deleteDatabase(_database.path);
+  }
 }

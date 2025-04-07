@@ -13,7 +13,7 @@ class CreateWalletController extends GetxController {
   Future<void> onTapConfirm() async {
     final password = state.password.trim();
     final passwordAgain = state.passwordAgain.trim();
-    if(!PasswordUtil.isValid(password)){
+    if (!PasswordUtil.isValid(password)) {
       Toast.show(G.text.passwordTips);
       return;
     }
@@ -26,9 +26,9 @@ class CreateWalletController extends GetxController {
       return;
     }
     final result = await Loading.asyncWrapper(
-      G.wallet.createWallet(password),
+      () => G.wallet.createWallet(password),
     );
-    if(result){
+    if (result) {
       Get.offAllNamed(kHomePage);
     }
   }

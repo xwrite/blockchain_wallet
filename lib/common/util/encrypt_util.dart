@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:bcrypt/bcrypt.dart';
 import 'package:blockchain_wallet/common/extension/byte_extension.dart';
 import 'package:hex/hex.dart';
 import 'package:pointycastle/export.dart';
@@ -218,13 +219,14 @@ class EncryptUtil {
     return gen.process(password);
   }
 
-  ///解析hex字符串为bytes
-  static Uint8List fromHexString(String hexString) {
-    return Uint8List.fromList(HEX.decode(hexString));
+  ///密码哈希
+  static String hashPassword(String password) {
+    return BCrypt.hashpw(password, BCrypt.gensalt());
   }
 
-  ///bytes转为hex字符串
-  static String toHexString(Uint8List data) {
-    return HEX.encode(data);
+  ///校验密码是否正确
+  static bool checkPassword(String password, String hash) {
+    return BCrypt.checkpw(password, hash);
   }
+
 }

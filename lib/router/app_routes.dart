@@ -1,8 +1,13 @@
+import 'package:blockchain_wallet/common/extension/get_extension.dart';
+import 'package:blockchain_wallet/common/extension/map_extension.dart';
 import 'package:blockchain_wallet/ui/authentication/authentication_page.dart';
 import 'package:blockchain_wallet/ui/home/home_page.dart';
 import 'package:blockchain_wallet/ui/mnemonic/backup/mnemonic_backup_page.dart';
 import 'package:blockchain_wallet/ui/mnemonic/mnemonic_page.dart';
-import 'package:blockchain_wallet/ui/send/send_page.dart';
+import 'package:blockchain_wallet/ui/transaction/detail/transaction_detail_controller.dart';
+import 'package:blockchain_wallet/ui/transaction/detail/transaction_detail_page.dart';
+import 'package:blockchain_wallet/ui/transaction/send/send_page.dart';
+import 'package:blockchain_wallet/ui/transaction/transaction_list_page.dart';
 import 'package:blockchain_wallet/ui/wallet/create/create_wallet_page.dart';
 import 'package:blockchain_wallet/ui/wallet/import/import_wallet_page.dart';
 import 'package:blockchain_wallet/ui/wallet/wallet_page.dart';
@@ -21,10 +26,11 @@ const kHomePage = '/HomePage';
 const kMnemonicPage = '/MnemonicPage';
 const kMnemonicBackupPage = '/MnemonicBackupPage';
 const kSendPage = '/SendPage';
+const kTransactionListPage = '/TransactionListPage';
+const kTransactionDetailPage = '/TransactionDetailPage';
 
 ///路由配置
 final routeConfigs = [
-
   //钱包欢迎页
   GetPage(name: kWalletPage, page: () => WalletPage()),
 
@@ -52,6 +58,18 @@ final routeConfigs = [
   //转账
   GetPage(name: kSendPage, page: () => SendPage()),
 
+  //转账记录
+  GetPage(name: kTransactionListPage, page: () => TransactionListPage()),
+
+  //交易详情
+  GetPage(
+    name: kTransactionDetailPage,
+    page: () => TransactionDetailPage(),
+    binding: BindingsBuilder.put((){
+      final txHash = Get.parameters.getString('txHash') ?? '';
+      return TransactionDetailController(txHash: txHash);
+    }),
+  ),
 ].map((page) {
   return page.copy(
     middlewares: [

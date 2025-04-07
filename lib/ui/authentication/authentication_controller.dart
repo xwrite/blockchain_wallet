@@ -16,9 +16,7 @@ class AuthenticationController extends GetxController {
       Toast.show(G.text.passwordRequired);
       return;
     }
-    final result = await Loading.asyncWrapper(
-      G.wallet.openWallet(password),
-    );
+    final result = await Loading.asyncWrapper(() => G.wallet.openWallet(password));
     if (!result) {
       Toast.show(G.text.passwordError);
       return;

@@ -1,7 +1,12 @@
 import 'dart:convert';
+import 'package:blockchain_wallet/common/extension/byte_extension.dart';
+import 'package:blockchain_wallet/common/extension/hex_extension.dart';
+import 'package:blockchain_wallet/common/extension/string_extension.dart';
 import 'package:blockchain_wallet/common/util/encrypt_util.dart';
 import 'package:blockchain_wallet/common/util/logger.dart';
 import 'package:blockchain_wallet/common/util/secure_storage.dart';
+import 'package:blockchain_wallet/data/app_database.dart';
+import 'package:blockchain_wallet/global.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:wallet_core_bindings/wallet_core_bindings.dart';
@@ -10,6 +15,8 @@ import 'package:wallet_core_bindings/wallet_core_bindings.dart';
 class WalletService extends GetxService {
   static const _kWalletEncryptedInfo = '_kWalletEncryptedInfo';
   static const _kBackupMnemonicTag = '_kBackupMnemonicTag';
+  static const _memoryPowerOf2 = 16;
+  static const _iterations = 2;
   var _hasWallet = false;
   final RxBool _isBackupMnemonicRx;
 
@@ -42,8 +49,7 @@ class WalletService extends GetxService {
   Future<bool> authentication(String password) async{
     final info = await _getEncryptedInfo();
     if(info != null){
-      final hash = TWHash.keccak256(utf8.encode(password));
-      return EncryptUtil.toHexString(hash) == info.passwordHash;
+      return EncryptUtil.checkPassword(password, info.passwordHash);
     }
     return false;
   }
@@ -72,18 +78,19 @@ class WalletService extends GetxService {
       final passwordBytes = utf8.encode(password);
 
       //使用密码短语派生AES密钥
-      final salt = EncryptUtil.fromHexString(info.salt);
+      final salt = info.salt.decodeHex();
       final aesKey = EncryptUtil.deriveKeyWithArgon2(
         password: passwordBytes,
         salt: salt,
-        iterations: 3,
+        memoryPowerOf2: _memoryPowerOf2,
+        iterations: _iterations,
       );
 
       //AES解密助记词
-      final aesNonce = EncryptUtil.fromHexString(info.nonce);
+      final aesNonce = info.nonce.decodeHex();
       final mnemonicBytes = EncryptUtil.aesGcmDecrypt(
         key: aesKey,
-        data: EncryptUtil.fromHexString(info.encryptedMnemonic),
+        data: info.encryptedMnemonic.decodeHex(),
         nonce: aesNonce,
       );
       if (mnemonicBytes == null) {
@@ -123,8 +130,9 @@ class WalletService extends GetxService {
       final salt = EncryptUtil.generateKey(16);
       final aesKey = EncryptUtil.deriveKeyWithArgon2(
         password: passwordBytes,
+        memoryPowerOf2: _memoryPowerOf2,
         salt: salt,
-        iterations: 3,
+        iterations: _iterations,
       );
 
       //AES加密助记词
@@ -135,14 +143,11 @@ class WalletService extends GetxService {
         nonce: aesNonce,
       );
 
-      //密码哈希
-      final passwordHash = TWHash.keccak256(passwordBytes);
-
       return WalletEncryptedInfo(
-        salt: EncryptUtil.toHexString(salt),
-        nonce: EncryptUtil.toHexString(aesNonce),
-        encryptedMnemonic: EncryptUtil.toHexString(encryptedMnemonic),
-        passwordHash: EncryptUtil.toHexString(passwordHash),
+        salt: salt.encodeHex(),
+        nonce: aesNonce.encodeHex(),
+        encryptedMnemonic: encryptedMnemonic.encodeHex(),
+        passwordHash: EncryptUtil.hashPassword(password),
       );
     }, [password, wallet.mnemonic]);
 
@@ -179,6 +184,10 @@ class WalletService extends GetxService {
 
   ///获取币种默认地址
   String? getDefaultAddress(){
+    // final key = _wallet?.getDerivedKey(coin: TWCoinType.Ethereum, account: 0, change: 0, address: 1);
+    // if(key != null){
+    //   return TWCoinType.Ethereum.deriveAddress(key);
+    // }
     return _wallet?.getAddressForCoin(TWCoinType.Ethereum);
   }
 
@@ -196,6 +205,7 @@ class WalletService extends GetxService {
   Future<void> deleteWallet() async {
     await _store.delete(_kWalletEncryptedInfo);
     await _store.delete(_kBackupMnemonicTag);
+    await G.db.delete();
     _wallet?.delete();
     _wallet = null;
     _hasWallet = false;
@@ -214,7 +224,7 @@ class WalletEncryptedInfo {
   ///AES加密后的助记词
   final String encryptedMnemonic;
 
-  ///密码hash（keccak256）
+  ///密码hash（BCrypt）
   final String passwordHash;
 
   WalletEncryptedInfo({

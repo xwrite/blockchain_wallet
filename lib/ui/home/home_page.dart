@@ -1,10 +1,7 @@
 import 'package:blockchain_wallet/common/extension/amount_format_extension.dart';
-import 'package:blockchain_wallet/generated/l10n.dart';
 import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/router/app_routes.dart';
-import 'package:blockchain_wallet/service/wallet_service.dart';
 import 'package:blockchain_wallet/ui/authentication/widget/authentication_dialog.dart';
-import 'package:blockchain_wallet/ui/mnemonic/mnemonic_page.dart';
 import 'package:blockchain_wallet/widget/edge_insets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,10 +19,10 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(G.text.appName)),
-      body: Container(
+      body: SingleChildScrollView(
         padding: XEdgeInsets(all: 16),
-        alignment: Alignment.center,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           spacing: 16,
           children: [
@@ -44,6 +41,10 @@ class HomePage extends StatelessWidget {
             ElevatedButton(
               onPressed: () => Get.toNamed(kSendPage),
               child: Text('转账'),
+            ),
+            ElevatedButton(
+              onPressed: () => Get.toNamed(kTransactionListPage),
+              child: Text('转账记录'),
             ),
             ElevatedButton(
               onPressed: () {

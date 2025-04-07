@@ -2,6 +2,8 @@ import 'dart:typed_data';
 
 import 'package:blockchain_wallet/app_config.dart';
 import 'package:blockchain_wallet/common/util/logger.dart';
+import 'package:blockchain_wallet/data/entity/transaction_entity.dart';
+import 'package:blockchain_wallet/global.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
 import 'package:web3dart/web3dart.dart';
@@ -47,7 +49,7 @@ class Web3Service extends GetxService {
     try {
       final credentials = EthPrivateKey(privateKey);
       final chainId = await _client.getChainId();
-      final result = await _client.sendTransaction(
+      final txHash = await _client.sendTransaction(
         credentials,
         Transaction(
           to: EthereumAddress.fromHex(receiveAddress),
@@ -57,8 +59,20 @@ class Web3Service extends GetxService {
         ),
         chainId: chainId.toInt(),
       );
-      logger.d('sendTransaction: $result');
-      return result;
+      logger.d('sendTransaction: $txHash');
+
+      //保存交易记录
+      final txEntity = TransactionEntity(
+        txHash: txHash,
+        from: credentials.address.eip55With0x,
+        to: receiveAddress,
+        value: amount.toString(),
+        gasPrice: gasPrice.toString(),
+        status: 0,
+        type: 0,
+      );
+      await G.db.transactionDao.save(txEntity);
+      return txHash;
     } catch (ex) {
       logger.w(ex);
       return null;

@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:wallet_core_bindings_native/wallet_core_bindings_native.dart';
+import 'data/app_database.dart';
 import 'generated/l10n.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 
+import 'global.dart';
 import 'service/web3_service.dart';
 
 void main() async {
@@ -18,6 +20,9 @@ void main() async {
 
 Future<void> init() async {
   await WalletCoreBindingsNativeImpl().initialize();
+
+  //初始化数据库
+  await G.db.initialize();
 
   //注入服务
   await Get.putAsync(WalletService.create, permanent: true);

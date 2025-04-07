@@ -70,7 +70,8 @@ class SendController extends GetxController with GetAutoDisposeMixin {
       return false;
     }
     //发送数量是否小于等于可用余额
-    return state.amountRx() <= _availableAmount;
+    final amount = state.amountRx();
+    return amount > BigInt.zero && amount <= _availableAmount;
   }
 
   ///最大可用数量
@@ -95,21 +96,29 @@ class SendController extends GetxController with GetAutoDisposeMixin {
     if(isSuccess != true){
       return;
     }
-
     final privateKey = G.wallet.getDefaultPrivateKey();
     if(privateKey == null){
       Toast.show('当前无法发送交易');
       return;
     }
-    final result = await Loading.asyncWrapper(G.web3.transfer(
+
+    final result = await Loading.asyncWrapper(() => G.web3.transfer(
       privateKey: privateKey,
       receiveAddress: state.receiveAddressRx(),
       gasPrice: state.gasPriceRx(),
       amount: state.amountRx(),
     ));
+
     if(result != null){
       Toast.show('交易发送成功');
+      Get.back(result: result);
+    }else{
+      Toast.show('交易发送失败');
     }
+
+    Loading.asyncWrapper(() async{
+
+    });
   }
 
   @override

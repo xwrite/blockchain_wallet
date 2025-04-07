@@ -40,7 +40,7 @@ class MnemonicBackupController extends GetxController {
         .addIf(() => !state.selectedWordListRx.contains(item), item);
 
     //已选择完成，开始验证
-    if(state.unselectedWordListRx.isEmpty){
+    if (state.unselectedWordListRx.isEmpty) {
       final mnemonic1 = state.wordList.join(' ');
       final mnemonic2 = state.selectedWordListRx.join(' ');
       if (mnemonic1 != mnemonic2) {
@@ -49,11 +49,11 @@ class MnemonicBackupController extends GetxController {
       }
 
       final result =
-      await Loading.asyncWrapper(G.wallet.backupMnemonic(mnemonic1));
-      if(result){
+          await Loading.asyncWrapper(() => G.wallet.backupMnemonic(mnemonic1));
+      if (result) {
         Toast.show(G.text.mnemonicBackupSuccess);
         Get.back(result: true);
-      }else{
+      } else {
         Toast.show(G.text.mnemonicBackupFailed);
       }
     }

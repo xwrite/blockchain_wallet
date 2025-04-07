@@ -18,14 +18,14 @@ class SendPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('转账')),
-      body: Container(
-        padding: XEdgeInsets(all: 16),
-        child: Obx(() {
-          final balanceText = state.balanceRx().formatEth(accuracy: 8);
-          final amount = state.amountRx();
-          final feeText = controller.feeRx.formatEth(accuracy: 8);
-          final isReadySend = controller.isReadySendRx;
-          return Column(
+      body: Obx(() {
+        final balanceText = state.balanceRx().formatEth(accuracy: 8);
+        final amount = state.amountRx();
+        final feeText = controller.feeRx.formatEth(accuracy: 8);
+        final isReadySend = controller.isReadySendRx;
+        return SingleChildScrollView(
+          padding: XEdgeInsets(all: 16),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 16,
             children: [
@@ -38,10 +38,10 @@ class SendPage extends StatelessWidget {
                 controller: controller.amountEditingController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: amount == BigInt.zero
-                      ? '数量（ETH）'
-                      : '数量（${amount.formatEth(accuracy: 8)}）',
-                  suffixIcon: TextButton(onPressed: controller.onTapAll, child: Text('全部余额'))
+                    labelText: amount == BigInt.zero
+                        ? '数量（ETH）'
+                        : '数量（${amount.formatEth(accuracy: 8)}）',
+                    suffixIcon: TextButton(onPressed: controller.onTapAll, child: Text('全部余额'))
                 ),
               ),
               Text('矿工费：$feeText'),
@@ -54,9 +54,9 @@ class SendPage extends StatelessWidget {
                 ),
               ),
             ],
-          );
-        }),
-      ),
+          ),
+        );
+      }),
     );
   }
 }

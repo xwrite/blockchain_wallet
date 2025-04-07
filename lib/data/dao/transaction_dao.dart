@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 
-import 'entity/transaction_entity.dart';
+import '../entity/transaction_entity.dart';
 
 ///交易记录 DAO
 class TransactionDao {
@@ -11,16 +11,19 @@ class TransactionDao {
   TransactionDao(this.database);
 
   ///创建表
-  Future<void> createTable() {
-    return database.execute('''
-    CREATE TABLE "$_tableName" (
+  static Future<void> createTable(Database db) {
+    return db.execute('''
+    CREATE TABLE IF NOT EXISTS"$_tableName" (
       "txHash"	TEXT NOT NULL,
       "from"	TEXT NOT NULL,
       "to"	TEXT NOT NULL,
       "value"	TEXT NOT NULL,
       "gasPrice"	TEXT NOT NULL,
-      "gasUsed"	INTEGER NOT NULL,
+      "gasUsed"	INTEGER,
+      "blockHash"	TEXT,
+      "blockNumber"	INTEGER,
       "status"	INTEGER NOT NULL,
+      "type"	INTEGER NOT NULL,
       "createdAt"	INTEGER NOT NULL,
       "updatedAt"	INTEGER NOT NULL,
       PRIMARY KEY("txHash")
@@ -38,7 +41,10 @@ class TransactionDao {
       'value': entity.value,
       'gasPrice': entity.gasPrice,
       'gasUsed': entity.gasUsed,
+      'blockHash': entity.blockHash,
+      'blockNumber': entity.blockNumber,
       'status': entity.status,
+      'type': entity.type,
       'createdAt': DateTime.now().millisecondsSinceEpoch,
       'updatedAt': DateTime.now().millisecondsSinceEpoch,
     };
@@ -57,9 +63,8 @@ class TransactionDao {
     }
   }
 
-  Future<void> delete(TransactionEntity entity) async {
-    await database
-        .delete(_tableName, where: 'txHash = ?', whereArgs: [entity.txHash]);
+  Future<void> delete(String txHash) async {
+    await database.delete(_tableName, where: 'txHash = ?', whereArgs: [txHash]);
   }
 
   Future<List<TransactionEntity>> list({
