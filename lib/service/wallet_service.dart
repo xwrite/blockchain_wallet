@@ -1,12 +1,11 @@
 import 'dart:convert';
-import 'package:blockchain_wallet/common/extension/byte_extension.dart';
+import 'package:biometric_storage/biometric_storage.dart';
 import 'package:blockchain_wallet/common/extension/hex_extension.dart';
-import 'package:blockchain_wallet/common/extension/string_extension.dart';
 import 'package:blockchain_wallet/common/util/encrypt_util.dart';
 import 'package:blockchain_wallet/common/util/logger.dart';
 import 'package:blockchain_wallet/common/util/secure_storage.dart';
-import 'package:blockchain_wallet/data/app_database.dart';
 import 'package:blockchain_wallet/global.dart';
+import 'package:blockchain_wallet/ui/authentication/widget/authentication_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:wallet_core_bindings/wallet_core_bindings.dart';
@@ -14,23 +13,32 @@ import 'package:wallet_core_bindings/wallet_core_bindings.dart';
 ///钱包服务
 class WalletService extends GetxService {
   static const _kWalletEncryptedInfo = '_kWalletEncryptedInfo';
+
+  ///是否已备份助记词
   static const _kBackupMnemonicTag = '_kBackupMnemonicTag';
+
+  ///是否启用生物识别
+  static const _kBiometricFeature = '_kBiometricFeature';
   static const _memoryPowerOf2 = 16;
   static const _iterations = 2;
   var _hasWallet = false;
   final RxBool _isBackupMnemonicRx;
+  final RxBool _isBiometricEnabledRx;
 
   static SecureStorage get _store => SecureStorage();
 
   TWHDWallet? _wallet;
 
-  WalletService._(this._hasWallet, bool isBackupMnemonic)
-      : _isBackupMnemonicRx = isBackupMnemonic.obs;
+  WalletService._(
+      this._hasWallet, bool isBackupMnemonic, bool isBiometricEnabled)
+      : _isBackupMnemonicRx = isBackupMnemonic.obs,
+        _isBiometricEnabledRx = isBiometricEnabled.obs;
 
   static Future<WalletService> create() async {
     final info = await _store.read(_kWalletEncryptedInfo);
     final backup = await _store.read(_kBackupMnemonicTag);
-    return WalletService._(info != null, backup != null);
+    final biometric = await _store.read(_kBiometricFeature);
+    return WalletService._(info != null, backup != null, biometric != null);
   }
 
   ///是否已设置钱包
@@ -39,23 +47,97 @@ class WalletService extends GetxService {
   ///是否已备份助记词
   bool get isBackupMnemonicRx => _isBackupMnemonicRx.value;
 
+  ///是否已启用指纹识别
+  bool get isBiometricEnabledRx => _isBiometricEnabledRx.value;
+
   ///钱包是否已打开
   bool get isOpen => _wallet != null;
 
   ///钱包助记词
   String? get mnemonic => _wallet?.mnemonic;
 
+  ///启用生物识别功能，用于保存密码
+  Future<bool> enableBiometric() async {
+
+    //检查密码
+    var password = '';
+    final success = await AuthenticationDialog.show(onSuccess: (pwd) => password = pwd ?? '');
+    if (success != true) {
+      return false;
+    }
+
+    try {
+      //检查设备是否支持
+      final resp = await BiometricStorage().canAuthenticate();
+      if (resp != CanAuthenticateResponse.success) {
+        return false;
+      }
+
+      final storage = await BiometricStorage().getStorage(_kBiometricFeature);
+      await storage.write(password);
+      await _store.write(_kBiometricFeature, 'enabled');
+      _isBiometricEnabledRx.value = true;
+      return true;
+    } on AuthException catch (e) {
+      logger.d('AuthException: $e');
+    }
+    return false;
+  }
+
+  ///关闭指纹验证功能
+  Future<bool> disableBiometric() async {
+    try {
+      //检查设备是否支持
+      final resp = await BiometricStorage().canAuthenticate();
+      if (resp != CanAuthenticateResponse.success) {
+        return false;
+      }
+      final storage = await BiometricStorage().getStorage(_kBiometricFeature);
+      await storage.delete();
+      await _store.delete(_kBiometricFeature);
+      _isBiometricEnabledRx.value = false;
+      return true;
+    } on AuthException catch (e) {
+      logger.d('AuthException: $e');
+    }
+    return false;
+  }
+
   ///认证密码是否正确
-  Future<bool> authentication(String password) async{
+  Future<bool> authentication(String password) async {
     final info = await _getEncryptedInfo();
-    if(info != null){
+    if (info != null) {
       return EncryptUtil.checkPassword(password, info.passwordHash);
     }
     return false;
   }
 
+  ///指纹认证
+  Future<bool?> biometricAuthentication({ValueChanged<String>? onSuccess}) async{
+    try {
+      //检查设备是否支持
+      final resp = await BiometricStorage().canAuthenticate();
+      if (resp != CanAuthenticateResponse.success) {
+        return false;
+      }
+      final storage = await BiometricStorage().getStorage(_kBiometricFeature);
+      final password = await storage.read();
+      if(password == null){
+        return false;
+      }
+      final isSuccess =  await authentication(password);
+      if(isSuccess){
+        onSuccess?.call(password);
+      }
+      return isSuccess;
+    } on AuthException catch (e) {
+      logger.d('AuthException: $e');
+      return null;
+    }
+  }
+
   ///钱包加密信息
-  Future<WalletEncryptedInfo?> _getEncryptedInfo() async{
+  Future<WalletEncryptedInfo?> _getEncryptedInfo() async {
     final infoStr = await _store.read(_kWalletEncryptedInfo);
     if (infoStr == null) {
       logger.d('钱包不存在');
@@ -65,7 +147,7 @@ class WalletService extends GetxService {
   }
 
   ///获取助记词
-  Future<String?> _getMnemonic(String password) async{
+  Future<String?> _getMnemonic(String password) async {
     final info = await _getEncryptedInfo();
     if (info == null) {
       logger.d('钱包不存在');
@@ -106,18 +188,19 @@ class WalletService extends GetxService {
   }
 
   ///通过助记词导入钱包
-  Future<bool> importWallet({required String mnemonic, required String password}) {
+  Future<bool> importWallet(
+      {required String mnemonic, required String password}) {
     return _createWallet(mnemonic: mnemonic, password: password);
   }
 
   ///创建钱包
-  Future<bool> _createWallet({final String? mnemonic, required String password}) async {
-
+  Future<bool> _createWallet(
+      {final String? mnemonic, required String password}) async {
     //创建
     final TWHDWallet wallet;
-    if(mnemonic != null){
+    if (mnemonic != null) {
       wallet = TWHDWallet.createWithMnemonic(mnemonic);
-    }else{
+    } else {
       wallet = TWHDWallet();
     }
 
@@ -161,7 +244,6 @@ class WalletService extends GetxService {
 
   ///通过密码打开钱包
   Future<bool> openWallet(String password) async {
-
     final mnemonic = await _getMnemonic(password);
 
     //密码不对,解密失败
@@ -183,7 +265,7 @@ class WalletService extends GetxService {
   }
 
   ///获取币种默认地址
-  String? getDefaultAddress(){
+  String? getDefaultAddress() {
     // final key = _wallet?.getDerivedKey(coin: TWCoinType.Ethereum, account: 0, change: 0, address: 1);
     // if(key != null){
     //   return TWCoinType.Ethereum.deriveAddress(key);
@@ -192,7 +274,7 @@ class WalletService extends GetxService {
   }
 
   ///获取默认地址私钥
-  Uint8List? getDefaultPrivateKey(){
+  Uint8List? getDefaultPrivateKey() {
     return _wallet?.getKeyForCoin(TWCoinType.Ethereum).data;
   }
 

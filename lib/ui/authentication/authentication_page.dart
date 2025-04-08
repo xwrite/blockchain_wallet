@@ -1,4 +1,3 @@
-import 'package:blockchain_wallet/generated/l10n.dart';
 import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/ui/authentication/authentication_controller.dart';
 import 'package:blockchain_wallet/widget/widget.dart';
@@ -26,6 +25,7 @@ class AuthenticationPage extends StatelessWidget {
         builder: (_, __, ___){
           return Obx((){
             final isPasswordVisible = state.isPasswordVisibleRx();
+            final isBiometricEnabled = G.wallet.isBiometricEnabledRx;
             return Padding(
               padding: XEdgeInsets(all: 16),
               child: Column(
@@ -40,7 +40,14 @@ class AuthenticationPage extends StatelessWidget {
                     padding: XEdgeInsets(top: 24),
                     child: ElevatedButton(
                       onPressed: controller.onTapVerifyPassword,
-                      child: Text(G.text.ok),
+                      child: Text('密码验证'),
+                    ),
+                  ),
+                  if(isBiometricEnabled) Padding(
+                    padding: XEdgeInsets(top: 16),
+                    child: ElevatedButton(
+                      onPressed: controller.onTapVerifyBiometric,
+                      child: Text('指纹验证'),
                     ),
                   ),
                 ],

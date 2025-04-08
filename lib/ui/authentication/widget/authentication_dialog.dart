@@ -9,7 +9,24 @@ class AuthenticationDialog extends StatelessWidget {
 
   const AuthenticationDialog._({super.key});
 
-  static Future<bool?> show({VoidCallback? onSuccess}) async {
+  ///显示并认证密码
+  static Future<bool?> show({ValueChanged<String>? onSuccess}) async {
+
+    //是否已启用指纹
+    if(G.wallet.isBiometricEnabledRx){
+      var pwd = '';
+      final result = await G.wallet.biometricAuthentication(onSuccess: (val) => pwd = val);
+      if(result == null){
+        return null;
+      }
+      if (!result) {
+        Toast.show('认证失败');
+      } else {
+        onSuccess?.call(pwd);
+      }
+      return result;
+    }
+
     if (_visible) {
       return null;
     }
@@ -28,7 +45,7 @@ class AuthenticationDialog extends StatelessWidget {
     if (!result) {
       Toast.show(G.text.passwordError);
     } else {
-      onSuccess?.call();
+      onSuccess?.call(password);
     }
     return result;
   }

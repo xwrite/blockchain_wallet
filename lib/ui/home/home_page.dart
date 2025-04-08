@@ -5,7 +5,6 @@ import 'package:blockchain_wallet/ui/authentication/widget/authentication_dialog
 import 'package:blockchain_wallet/widget/edge_insets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'home_controller.dart';
 import 'home_state.dart';
 
@@ -46,9 +45,23 @@ class HomePage extends StatelessWidget {
               onPressed: () => Get.toNamed(kTransactionListPage),
               child: Text('转账记录'),
             ),
+            Obx(() {
+              final isEnabled = G.wallet.isBiometricEnabledRx;
+              return SwitchListTile(
+                value: isEnabled,
+                title: Text('指纹验证'),
+                onChanged: (value) {
+                  if (value) {
+                    G.wallet.enableBiometric();
+                  } else {
+                    G.wallet.disableBiometric();
+                  }
+                },
+              );
+            }),
             ElevatedButton(
               onPressed: () {
-                AuthenticationDialog.show(onSuccess: () async {
+                AuthenticationDialog.show(onSuccess: (_) async {
                   await G.wallet.deleteWallet();
                   Get.offAllNamed(kWalletPage);
                 });
@@ -58,7 +71,7 @@ class HomePage extends StatelessWidget {
             Obx(() {
               return ElevatedButton(
                 onPressed: () {
-                  AuthenticationDialog.show(onSuccess: () {
+                  AuthenticationDialog.show(onSuccess: (_) {
                     Get.toNamed(kMnemonicPage);
                   });
                 },

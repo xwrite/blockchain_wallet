@@ -1,7 +1,6 @@
-import 'package:blockchain_wallet/generated/l10n.dart';
 import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/router/app_routes.dart';
-import 'package:blockchain_wallet/service/wallet_service.dart';
+import 'package:blockchain_wallet/ui/authentication/widget/authentication_dialog.dart';
 import 'package:blockchain_wallet/widget/loading.dart';
 import 'package:blockchain_wallet/widget/toast.dart';
 import 'package:get/get.dart';
@@ -24,4 +23,12 @@ class AuthenticationController extends GetxController {
 
     Get.offAllNamed(kHomePage);
   }
+
+  Future<void> onTapVerifyBiometric() async {
+    AuthenticationDialog.show(onSuccess: (password) async{
+      await Loading.asyncWrapper(() => G.wallet.openWallet(password));
+      Get.offAllNamed(kHomePage);
+    });
+  }
+
 }
