@@ -18,7 +18,10 @@ class TransactionDetailPage extends GetView<TransactionDetailController> {
       appBar: AppBar(title: Text('交易详情'),),
       body: Container(
         padding: XEdgeInsets(all: 16),
-        child: Text(controller.txHash),
+        child: Obx((){
+          final transaction = state.transactionRx()?.toJson();
+          return Text(transaction.toString());
+        }),
       ),
     );
   }

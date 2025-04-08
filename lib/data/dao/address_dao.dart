@@ -26,7 +26,7 @@ class AddressDao {
     ''');
   }
 
-  Future<void> save(AddressEntity entity) async {
+  Future<void> insertOrUpdate(AddressEntity entity) async {
     final results = await database.query(_tableName,
         where: 'address=?', whereArgs: [entity.address], limit: 1, offset: 0);
     final values = {
@@ -52,12 +52,12 @@ class AddressDao {
     }
   }
 
-  Future<void> delete(String address) async {
+  Future<void> deleteByAddress(String address) async {
     await database
         .delete(_tableName, where: 'address = ?', whereArgs: [address]);
   }
 
-  Future<List<AddressEntity>> list({
+  Future<List<AddressEntity>> findPage({
     required int page,
     required int pageSize,
   }) async {

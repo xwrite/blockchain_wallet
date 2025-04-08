@@ -7,12 +7,13 @@ import 'transaction_list_state.dart';
 
 class TransactionListController extends GetxController {
   final TransactionListState state = TransactionListState();
+  static const _kPageSize = 20;
 
   late final pagingController = IntPagingController<TransactionEntity>(
     fetchPage: fetchPage,
   );
 
   Future<List<TransactionEntity>> fetchPage(int page) {
-    return G.db.transactionDao.list(page: page, pageSize: 20);
+    return G.db.transactionDao.findPage(page: page, pageSize: _kPageSize);
   }
 }

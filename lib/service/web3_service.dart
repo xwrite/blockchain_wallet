@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:blockchain_wallet/app_config.dart';
+import 'package:blockchain_wallet/common/extension/hex_extension.dart';
 import 'package:blockchain_wallet/common/util/logger.dart';
 import 'package:blockchain_wallet/data/entity/transaction_entity.dart';
 import 'package:blockchain_wallet/global.dart';
@@ -71,11 +72,36 @@ class Web3Service extends GetxService {
         status: 0,
         type: 0,
       );
-      await G.db.transactionDao.save(txEntity);
+      await G.db.transactionDao.insertOrUpdate(txEntity);
       return txHash;
     } catch (ex) {
       logger.w(ex);
       return null;
     }
   }
+
+  Future<TransactionEntity?> getTransaction(String txHash) async{
+    try{
+      var entity = await G.db.transactionDao.findByTxHash(txHash);
+      if(entity == null || entity.status > 0){
+        return entity;
+      }
+
+      final receipt = await _client.getTransactionReceipt(txHash);
+      if(receipt != null){
+        entity = entity.copyWith(
+          status: receipt.status == true ? 1 : 2,
+          gasUsed: receipt.gasUsed?.toInt(),
+          blockHash: '0x${receipt.blockHash.encodeHex()}',
+          blockNumber: receipt.blockNumber.blockNum,
+        );
+        await G.db.transactionDao.insertOrUpdate(entity);
+      }
+      return entity;
+    }catch(ex){
+      logger.w(ex);
+      return null;
+    }
+  }
+
 }

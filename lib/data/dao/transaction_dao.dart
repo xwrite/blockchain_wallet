@@ -31,9 +31,8 @@ class TransactionDao {
     ''');
   }
 
-  Future<void> save(TransactionEntity entity) async {
-    final results = await database.query(_tableName,
-        where: 'txHash=?', whereArgs: [entity.txHash], limit: 1, offset: 0);
+  Future<void> insertOrUpdate(TransactionEntity entity) async {
+    final oldEntity = await findByTxHash(entity.txHash);
     final values = {
       'txHash': entity.txHash,
       'from': entity.from,
@@ -48,13 +47,12 @@ class TransactionDao {
       'createdAt': DateTime.now().millisecondsSinceEpoch,
       'updatedAt': DateTime.now().millisecondsSinceEpoch,
     };
-    if (results.isNotEmpty) {
-      final createdAt = results.first['createdAt'];
+    if (oldEntity != null) {
       await database.update(
           _tableName,
           {
             ...values,
-            'createdAt': createdAt,
+            'createdAt': oldEntity.createdAt,
           },
           where: 'txHash=?',
           whereArgs: [entity.txHash]);
@@ -63,11 +61,26 @@ class TransactionDao {
     }
   }
 
-  Future<void> delete(String txHash) async {
+  Future<void> deleteByTxHash(String txHash) async {
     await database.delete(_tableName, where: 'txHash = ?', whereArgs: [txHash]);
   }
 
-  Future<List<TransactionEntity>> list({
+  Future<TransactionEntity?> findByTxHash(String txHash) async {
+    final results = await database.query(
+      _tableName,
+      where: 'txHash=?',
+      whereArgs: [txHash],
+      limit: 1,
+      offset: 0,
+    );
+    if(results.isNotEmpty){
+      return TransactionEntity.fromJson(results.first);
+    }else{
+      return null;
+    }
+  }
+
+  Future<List<TransactionEntity>> findPage({
     required int page,
     required int pageSize,
   }) async {

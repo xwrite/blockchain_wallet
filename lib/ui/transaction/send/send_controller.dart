@@ -4,6 +4,7 @@ import 'package:blockchain_wallet/common/mixin/get_auto_dispose_mixin.dart';
 import 'package:blockchain_wallet/common/util/ether_amount_util.dart';
 import 'package:blockchain_wallet/common/util/logger.dart';
 import 'package:blockchain_wallet/global.dart';
+import 'package:blockchain_wallet/router/app_routes.dart';
 import 'package:blockchain_wallet/ui/authentication/widget/authentication_dialog.dart';
 import 'package:blockchain_wallet/widget/toast.dart';
 import 'package:blockchain_wallet/widget/widget.dart';
@@ -102,23 +103,22 @@ class SendController extends GetxController with GetAutoDisposeMixin {
       return;
     }
 
-    final result = await Loading.asyncWrapper(() => G.web3.transfer(
+    final txHash = await Loading.asyncWrapper(() => G.web3.transfer(
       privateKey: privateKey,
       receiveAddress: state.receiveAddressRx(),
       gasPrice: state.gasPriceRx(),
       amount: state.amountRx(),
     ));
 
-    if(result != null){
+    if(txHash != null){
       Toast.show('交易发送成功');
-      Get.back(result: result);
+      Get.offNamed(kTransactionDetailPage, parameters: {
+        'txHash': txHash,
+      });
     }else{
       Toast.show('交易发送失败');
     }
 
-    Loading.asyncWrapper(() async{
-
-    });
   }
 
   @override

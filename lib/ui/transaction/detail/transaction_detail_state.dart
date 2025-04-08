@@ -1,5 +1,8 @@
+import 'package:blockchain_wallet/data/entity/transaction_entity.dart';
+import 'package:get/get.dart';
+
 class TransactionDetailState {
-  TransactionDetailState() {
-    ///Initialize variables
-  }
+
+  final transactionRx = Rxn<TransactionEntity>();
+
 }
