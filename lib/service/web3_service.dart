@@ -12,6 +12,7 @@ import 'package:wallet/wallet.dart';
 
 ///节点连接服务
 class Web3Service extends GetxService {
+
   ///转账标准gas Limit
   final gasLimit = BigInt.from(21000);
 

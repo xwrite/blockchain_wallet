@@ -4,6 +4,9 @@ import 'package:blockchain_wallet/common/extension/hex_extension.dart';
 import 'package:blockchain_wallet/common/util/encrypt_util.dart';
 import 'package:blockchain_wallet/common/util/logger.dart';
 import 'package:blockchain_wallet/common/util/secure_storage.dart';
+import 'package:blockchain_wallet/data/api/web3_provider.dart';
+import 'package:blockchain_wallet/data/entity/transaction_entity.dart';
+import 'package:blockchain_wallet/data/repository/transaction_repository.dart';
 import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/ui/authentication/widget/authentication_dialog.dart';
 import 'package:flutter/foundation.dart';
@@ -12,6 +15,9 @@ import 'package:wallet_core_bindings/wallet_core_bindings.dart';
 
 ///钱包服务
 class WalletService extends GetxService {
+  ///转账标准gas Limit
+  final transferGasLimit = 21000;
+
   static const _kWalletEncryptedInfo = '_kWalletEncryptedInfo';
 
   ///是否已备份助记词
@@ -28,17 +34,32 @@ class WalletService extends GetxService {
   static SecureStorage get _store => SecureStorage();
 
   TWHDWallet? _wallet;
+  final Web3Provider _web3Provider;
+  final TransactionRepository _transactionRepository;
 
   WalletService._(
-      this._hasWallet, bool isBackupMnemonic, bool isBiometricEnabled)
-      : _isBackupMnemonicRx = isBackupMnemonic.obs,
+    this._web3Provider,
+    this._transactionRepository,
+    this._hasWallet,
+    bool isBackupMnemonic,
+    bool isBiometricEnabled,
+  )   : _isBackupMnemonicRx = isBackupMnemonic.obs,
         _isBiometricEnabledRx = isBiometricEnabled.obs;
 
-  static Future<WalletService> create() async {
+  static Future<WalletService> create({
+    required Web3Provider web3Provider,
+    required TransactionRepository transactionRepository,
+  }) async {
     final info = await _store.read(_kWalletEncryptedInfo);
     final backup = await _store.read(_kBackupMnemonicTag);
     final biometric = await _store.read(_kBiometricFeature);
-    return WalletService._(info != null, backup != null, biometric != null);
+    return WalletService._(
+      web3Provider,
+      transactionRepository,
+      info != null,
+      backup != null,
+      biometric != null,
+    );
   }
 
   ///是否已设置钱包
@@ -58,10 +79,10 @@ class WalletService extends GetxService {
 
   ///启用生物识别功能，用于保存密码
   Future<bool> enableBiometric() async {
-
     //检查密码
     var password = '';
-    final success = await AuthenticationDialog.show(onSuccess: (pwd) => password = pwd ?? '');
+    final success = await AuthenticationDialog.show(
+        onSuccess: (pwd) => password = pwd ?? '');
     if (success != true) {
       return false;
     }
@@ -113,7 +134,8 @@ class WalletService extends GetxService {
   }
 
   ///指纹认证
-  Future<bool?> biometricAuthentication({ValueChanged<String>? onSuccess}) async{
+  Future<bool?> biometricAuthentication(
+      {ValueChanged<String>? onSuccess}) async {
     try {
       //检查设备是否支持
       final resp = await BiometricStorage().canAuthenticate();
@@ -122,11 +144,11 @@ class WalletService extends GetxService {
       }
       final storage = await BiometricStorage().getStorage(_kBiometricFeature);
       final password = await storage.read();
-      if(password == null){
+      if (password == null) {
         return false;
       }
-      final isSuccess =  await authentication(password);
-      if(isSuccess){
+      final isSuccess = await authentication(password);
+      if (isSuccess) {
         onSuccess?.call(password);
       }
       return isSuccess;
@@ -292,6 +314,51 @@ class WalletService extends GetxService {
     _wallet = null;
     _hasWallet = false;
     _isBackupMnemonicRx.value = false;
+  }
+
+
+  ///转账
+  ///- password 钱包密码
+  ///- toAddress 接收地址
+  ///- gasPrice gas价格
+  ///- value 转账数量
+  ///- returns 成功返回交易hash
+  Future<String?> transfer({
+    required String password,
+    required String toAddress,
+    required BigInt gasPrice,
+    required BigInt value,
+  }) async{
+    final fromAddress = getDefaultAddress();
+    final privateKey = getDefaultPrivateKey();
+    if(privateKey == null || fromAddress == null){
+      logger.w('privateKey or address is null!');
+      return null;
+    }
+    final txHash = await _web3Provider.sendTransaction(
+        privateKey: privateKey,
+        toAddress: toAddress,
+        gasPrice: gasPrice,
+        gasLimit: BigInt.from(transferGasLimit),
+        value: value,
+    );
+    if(txHash == null){
+      return null;
+    }
+
+    //保存交易记录
+    final txEntity = TransactionEntity(
+      txHash: txHash,
+      from: fromAddress,
+      to: toAddress,
+      value: value.toString(),
+      gasPrice: gasPrice.toString(),
+      status: 0,
+      type: 0,
+    );
+    await _transactionRepository.saveTransaction(txEntity);
+
+    return txHash;
   }
 }
 

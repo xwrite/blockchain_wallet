@@ -1,46 +1,37 @@
 
 import 'dart:async';
-import 'package:sqflite/sqflite.dart';
+
 import 'package:path/path.dart';
-import 'dao/address_dao.dart';
-import 'dao/transaction_dao.dart';
+import 'package:sqflite/sqflite.dart';
+
+import 'dao/impl/address_dao_impl.dart';
+import 'dao/impl/transaction_dao_impl.dart';
 
 
 ///数据库
 class AppDatabase {
-  AppDatabase._();
-  factory AppDatabase() => _instance ??= AppDatabase._();
+  const AppDatabase._(this._database);
 
-  static AppDatabase? _instance;
-  late Database _database;
-  late TransactionDao _transactionDao;
-  late AddressDao _addressDao;
-  var _isInitialize = false;
+  final Database _database;
 
   ///初始化数据库
-  Future<Database> initialize() async {
-    if(!_isInitialize){
-      _isInitialize = true;
-      final dir = await getDatabasesPath();
-      final path = join(dir, 'app.db');
-      _database = await openDatabase(path, version: 1, onCreate: _onCreate);
-
-      //init dao
-      _transactionDao = TransactionDao(_database);
-      _addressDao = AddressDao(_database);
-    }
-    return _database;
+  static Future<AppDatabase> create() async {
+    final dir = await getDatabasesPath();
+    final path = join(dir, 'app.db');
+    final database = await openDatabase(path, version: 1, onCreate: _onCreate);
+    return AppDatabase._(database);
   }
 
   ///数据库创建时，创建数据库表
-  Future<void> _onCreate(Database db, int version) async {
-    await TransactionDao.createTable(db);
-    await AddressDao.createTable(db);
+  static Future<void> _onCreate(Database db, int version) async {
+    await TransactionDaoImpl(db).createTable();
+    await AddressDaoImpl(db).createTable();
   }
 
-  TransactionDao get transactionDao => _transactionDao;
-
-  AddressDao get addressDao => _addressDao;
+  ///创建dao
+  T createDao<T>(T Function(Database db) factory){
+    return factory.call(_database);
+  }
 
   ///删除数据库
   Future<void> delete() {

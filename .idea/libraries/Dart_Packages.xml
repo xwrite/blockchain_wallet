@@ -51,13 +51,6 @@
             </list>
           </value>
         </entry>
-        <entry key="biometric_signature">
-          <value>
-            <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/biometric_signature-6.2.0/lib" />
-            </list>
-          </value>
-        </entry>
         <entry key="biometric_storage">
           <value>
             <list>
@@ -831,7 +824,6 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/args-2.7.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/async-2.12.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/bcrypt-1.1.3/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/biometric_signature-6.2.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/biometric_storage-5.0.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/boolean_selector-2.1.2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/characters-1.4.0/lib" />
