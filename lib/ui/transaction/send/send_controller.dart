@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:blockchain_wallet/common/mixin/get_auto_dispose_mixin.dart';
 import 'package:blockchain_wallet/common/util/ether_amount_util.dart';
 import 'package:blockchain_wallet/common/util/logger.dart';
+import 'package:blockchain_wallet/data/api/web3_provider.dart';
 import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/router/app_routes.dart';
 import 'package:blockchain_wallet/ui/authentication/widget/authentication_dialog.dart';
@@ -19,6 +20,7 @@ import 'send_state.dart';
 class SendController extends GetxController with GetAutoDisposeMixin {
   final state = SendState();
   final amountEditingController = TextEditingController();
+  final _web3Provider = Get.find<Web3Provider>();
 
   @override
   void onInit() {
@@ -38,17 +40,17 @@ class SendController extends GetxController with GetAutoDisposeMixin {
     //获取余额
     final address = state.addressRx();
     if (address.isNotEmpty) {
-      final balance = await G.web3.getBalance(address);
+      final balance = await _web3Provider.getBalance(address);
       if (balance != null) {
         state.balanceRx.value = balance;
       }
     }
 
     //gasLimit
-    state.gasLimitRx.value = G.web3.gasLimit;
+    state.gasLimitRx.value = BigInt.from(G.wallet.transferGasLimit);
 
     //gasPrice
-    final gasPrice = await G.web3.getGasPrice();
+    final gasPrice = await _web3Provider.getGasPrice();
     if(gasPrice != null){
       state.gasPriceRx.value = gasPrice;
     }
@@ -93,22 +95,19 @@ class SendController extends GetxController with GetAutoDisposeMixin {
     }
 
     //验证钱包密码
-    final isSuccess = await AuthenticationDialog.show();
-    if(isSuccess != true){
-      return;
-    }
-    final privateKey = G.wallet.getDefaultPrivateKey();
-    if(privateKey == null){
-      Toast.show('当前无法发送交易');
+    final password = await AuthenticationDialog.show();
+    if(password == null || password.isEmpty){
       return;
     }
 
-    final txHash = await Loading.asyncWrapper(() => G.web3.transfer(
-      privateKey: privateKey,
-      receiveAddress: state.receiveAddressRx(),
-      gasPrice: state.gasPriceRx(),
-      amount: state.amountRx(),
-    ));
+    final txHash = await Loading.asyncWrapper((){
+      return G.wallet.transfer(
+        password: password,
+        toAddress: state.receiveAddressRx(),
+        gasPrice: state.gasPriceRx(),
+        value: state.amountRx(),
+      );
+    });
 
     if(txHash != null){
       Toast.show('交易发送成功');

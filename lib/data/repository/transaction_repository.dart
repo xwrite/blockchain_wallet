@@ -22,8 +22,8 @@ class TransactionRepository {
     return _transactionDao.deleteByTxHash(txHash);
   }
 
-  ///查询
-  Future<TransactionEntity?> findTransaction(String txHash) async{
+  ///获取交易
+  Future<TransactionEntity?> getTransaction(String txHash) async{
     var entity = await _transactionDao.findByTxHash(txHash);
     if(entity == null || entity.status > 0){
       return entity;
@@ -42,7 +42,7 @@ class TransactionRepository {
   }
 
   ///分页查询
-  Future<List<TransactionEntity>> findTransactionPage({
+  Future<List<TransactionEntity>> getTransactionPage({
     required int page,
     required int pageSize,
   }) {

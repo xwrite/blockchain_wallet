@@ -3,6 +3,7 @@ import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/router/app_routes.dart';
 import 'package:blockchain_wallet/ui/authentication/widget/authentication_dialog.dart';
 import 'package:blockchain_wallet/widget/edge_insets.dart';
+import 'package:blockchain_wallet/widget/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'home_controller.dart';
@@ -50,30 +51,39 @@ class HomePage extends StatelessWidget {
               return SwitchListTile(
                 value: isEnabled,
                 title: Text('指纹验证'),
-                onChanged: (value) {
+                onChanged: (value) async{
                   if (value) {
-                    G.wallet.enableBiometric();
+                    final password = await AuthenticationDialog.show();
+                    if(password != null && password.isNotEmpty){
+                      G.wallet.enableBiometric(password);
+                    }
                   } else {
                     G.wallet.disableBiometric();
                   }
                 },
               );
             }),
-            ElevatedButton(
-              onPressed: () {
-                AuthenticationDialog.show(onSuccess: (_) async {
-                  await G.wallet.deleteWallet();
-                  Get.offAllNamed(kWalletPage);
-                });
-              },
-              child: Text(G.text.deleteWallet),
-            ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     AuthenticationDialog.show(onSuccess: (_) async {
+            //       await G.wallet.deleteWallet();
+            //       Get.offAllNamed(kWalletPage);
+            //     });
+            //   },
+            //   child: Text(G.text.deleteWallet),
+            // ),
             Obx(() {
               return ElevatedButton(
-                onPressed: () {
-                  AuthenticationDialog.show(onSuccess: (_) {
-                    Get.toNamed(kMnemonicPage);
-                  });
+                onPressed: () async{
+                  final password = await AuthenticationDialog.show();
+                  if(password != null && password.isNotEmpty){
+                    final isOk = await G.wallet.authentication(password);
+                    if(isOk){
+                      Get.toNamed(kMnemonicPage);
+                    }else{
+                      Toast.show('密码错误');
+                    }
+                  }
                 },
                 child: Text('是否已备份助记词（${G.wallet.isBackupMnemonicRx}）'),
               );

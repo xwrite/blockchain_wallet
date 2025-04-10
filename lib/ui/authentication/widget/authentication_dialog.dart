@@ -3,51 +3,21 @@ import 'package:blockchain_wallet/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-///密码认证对话框
+///认证对话框
 class AuthenticationDialog extends StatelessWidget {
   static var _visible = false;
 
   const AuthenticationDialog._({super.key});
 
-  ///显示并认证密码
-  static Future<bool?> show({ValueChanged<String>? onSuccess}) async {
-
-    //是否已启用指纹
-    if(G.wallet.isBiometricEnabledRx){
-      var pwd = '';
-      final result = await G.wallet.biometricAuthentication(onSuccess: (val) => pwd = val);
-      if(result == null){
-        return null;
-      }
-      if (!result) {
-        Toast.show('认证失败');
-      } else {
-        onSuccess?.call(pwd);
-      }
-      return result;
-    }
-
+  static Future<String?> show() async {
     if (_visible) {
       return null;
     }
     _visible = true;
-    final password = await Get.dialog<String>(
+    return Get.dialog<String>(
       AuthenticationDialog._(),
       barrierDismissible: false,
     ).whenComplete(() => _visible = false);
-
-    if (password == null) {
-      return null;
-    }
-    final result = await Loading.asyncWrapper(
-      () => G.wallet.authentication(password),
-    );
-    if (!result) {
-      Toast.show(G.text.passwordError);
-    } else {
-      onSuccess?.call(password);
-    }
-    return result;
   }
 
   @override

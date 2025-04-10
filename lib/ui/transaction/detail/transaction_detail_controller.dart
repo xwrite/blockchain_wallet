@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:blockchain_wallet/data/repository/transaction_repository.dart';
 import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/widget/widget.dart';
 import 'package:get/get.dart';
@@ -11,6 +12,7 @@ class TransactionDetailController extends GetxController {
 
   final String txHash;
   Timer? _timer;
+  final _repository = Get.find<TransactionRepository>();
   TransactionDetailController({required this.txHash});
 
   @override
@@ -20,7 +22,7 @@ class TransactionDetailController extends GetxController {
   }
 
   Future<void> fetchData() async{
-    final entity = await G.web3.getTransaction(txHash);
+    final entity = await _repository.getTransaction(txHash);
     state.transactionRx.value = entity;
     if( entity?.status == 0){
       //轮询

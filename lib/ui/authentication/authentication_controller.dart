@@ -1,6 +1,5 @@
 import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/router/app_routes.dart';
-import 'package:blockchain_wallet/ui/authentication/widget/authentication_dialog.dart';
 import 'package:blockchain_wallet/widget/loading.dart';
 import 'package:blockchain_wallet/widget/toast.dart';
 import 'package:get/get.dart';
@@ -15,7 +14,9 @@ class AuthenticationController extends GetxController {
       Toast.show(G.text.passwordRequired);
       return;
     }
-    final result = await Loading.asyncWrapper(() => G.wallet.openWallet(password));
+    final result = await Loading.asyncWrapper((){
+      return G.wallet.authentication(password);
+    });
     if (!result) {
       Toast.show(G.text.passwordError);
       return;
@@ -25,10 +26,7 @@ class AuthenticationController extends GetxController {
   }
 
   Future<void> onTapVerifyBiometric() async {
-    AuthenticationDialog.show(onSuccess: (password) async{
-      await Loading.asyncWrapper(() => G.wallet.openWallet(password));
-      Get.offAllNamed(kHomePage);
-    });
+
   }
 
 }

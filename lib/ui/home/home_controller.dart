@@ -1,6 +1,7 @@
 import 'package:biometric_storage/biometric_storage.dart';
 import 'package:blockchain_wallet/common/extension/amount_format_extension.dart';
 import 'package:blockchain_wallet/common/util/logger.dart';
+import 'package:blockchain_wallet/data/api/web3_provider.dart';
 import 'package:blockchain_wallet/global.dart';
 import 'package:get/get.dart';
 
@@ -8,6 +9,7 @@ import 'home_state.dart';
 
 class HomeController extends GetxController {
   final HomeState state = HomeState();
+  final _web3Provider = Get.find<Web3Provider>();
 
   @override
   void onInit() {
@@ -19,7 +21,7 @@ class HomeController extends GetxController {
   void fetchBalance() async{
     final address = state.addressRx();
     if(address.isNotEmpty){
-      final balance = await G.web3.getBalance(address);
+      final balance = await _web3Provider.getBalance(address);
       if(balance != null){
         state.balanceRx.value = balance;
       }

@@ -78,12 +78,10 @@ class WalletService extends GetxService {
   String? get mnemonic => _wallet?.mnemonic;
 
   ///启用生物识别功能，用于保存密码
-  Future<bool> enableBiometric() async {
+  Future<bool> enableBiometric(String password) async {
     //检查密码
-    var password = '';
-    final success = await AuthenticationDialog.show(
-        onSuccess: (pwd) => password = pwd ?? '');
-    if (success != true) {
+    if(!await authentication(password)){
+      logger.d('密码错误');
       return false;
     }
 
@@ -247,7 +245,6 @@ class WalletService extends GetxService {
         data: mnemonicBytes,
         nonce: aesNonce,
       );
-
       return WalletEncryptedInfo(
         salt: salt.encodeHex(),
         nonce: aesNonce.encodeHex(),
@@ -309,7 +306,6 @@ class WalletService extends GetxService {
   Future<void> deleteWallet() async {
     await _store.delete(_kWalletEncryptedInfo);
     await _store.delete(_kBackupMnemonicTag);
-    await G.db.delete();
     _wallet?.delete();
     _wallet = null;
     _hasWallet = false;
