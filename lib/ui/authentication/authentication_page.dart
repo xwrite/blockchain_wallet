@@ -18,14 +18,14 @@ class AuthenticationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(G.text.passwordVerify),
+        title: Text(Global.text.passwordVerify),
       ),
       body: SecureWidget(
         isSecure: true,
         builder: (_, __, ___){
           return Obx((){
             final isPasswordVisible = state.isPasswordVisibleRx();
-            final isBiometricEnabled = G.wallet.isBiometricEnabledRx;
+            final isBiometricEnabled = Global.wallet.isBiometricEnabledRx;
             return Padding(
               padding: XEdgeInsets(all: 16),
               child: Column(
@@ -33,7 +33,7 @@ class AuthenticationPage extends StatelessWidget {
                   buildTextField(
                     isVisiblePassword: isPasswordVisible,
                     onToggleVisiblePassword: state.isPasswordVisibleRx.toggle,
-                    labelText: G.text.passwordRequired,
+                    labelText: Global.text.passwordRequired,
                     onChanged: (val) => state.password = val,
                   ),
                   Padding(

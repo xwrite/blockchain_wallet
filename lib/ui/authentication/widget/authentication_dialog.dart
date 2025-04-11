@@ -31,21 +31,21 @@ class AuthenticationDialog extends StatelessWidget {
         keyboardType: TextInputType.visiblePassword,
         onChanged: (val) => password = val,
         decoration: InputDecoration(
-          labelText: G.text.passwordRequired,
+          labelText: Global.text.passwordRequired,
           counterText: '',
         ),
       ),
       actions: [
-        TextButton(onPressed: Get.back, child: Text(G.text.cancel)),
+        TextButton(onPressed: Get.back, child: Text(Global.text.cancel)),
         TextButton(
           onPressed: () {
             if (password.isEmpty) {
-              Toast.show(G.text.passwordRequired);
+              Toast.show(Global.text.passwordRequired);
               return;
             }
             Get.back(result: password);
           },
-          child: Text(G.text.ok),
+          child: Text(Global.text.ok),
         ),
       ],
     );

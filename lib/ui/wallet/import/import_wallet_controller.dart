@@ -19,19 +19,19 @@ class ImportWalletController extends GetxController {
       return;
     }
     if (!PasswordUtil.isValid(password)) {
-      Toast.show(G.text.passwordTips);
+      Toast.show(Global.text.passwordTips);
       return;
     }
     if (passwordAgain.isEmpty) {
-      Toast.show(G.text.passwordAgainRequired);
+      Toast.show(Global.text.passwordAgainRequired);
       return;
     }
     if (password != passwordAgain) {
-      Toast.show(G.text.passwordInputInconsistency);
+      Toast.show(Global.text.passwordInputInconsistency);
       return;
     }
     final result = await Loading.asyncWrapper(
-      () => G.wallet.importWallet(mnemonic: mnemonic, password: password),
+      () => Global.wallet.importWallet(mnemonic: mnemonic, password: password),
     );
     if (result) {
       Get.offAllNamed(kHomePage);

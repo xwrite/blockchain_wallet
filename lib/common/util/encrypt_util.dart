@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:bcrypt/bcrypt.dart';
 import 'package:blockchain_wallet/common/extension/byte_extension.dart';
-import 'package:hex/hex.dart';
 import 'package:pointycastle/export.dart';
 
 ///加密工具类
@@ -153,29 +151,6 @@ class EncryptUtil {
   }
 
 
-  ///PBKDF2 派生密钥
-  static Uint8List deriveKeyWithPBKDF2({
-    required Uint8List password,
-    required Uint8List salt,
-    int iterations = 100000,
-  }) {
-    // 1. 配置 PBKDF2 参数
-    final params = Pbkdf2Parameters(
-      salt,
-      iterations,
-      32, // AES-256 需要 32 字节
-    );
-
-    // 2. 创建 HMAC-SHA256 伪随机函数
-    final hmac = HMac(SHA256Digest(), 64); // SHA256 的块大小为 64 字节
-
-    // 3. 初始化 PBKDF2 实例
-    final pbkdf2 = PBKDF2KeyDerivator(hmac)..init(params);
-
-    // 4. 执行密钥派生
-    return pbkdf2.process(password);
-  }
-
   ///生成随机密钥
   ///- length 密钥长度
   static Uint8List generateKey(int length) {
@@ -201,7 +176,7 @@ class EncryptUtil {
     required Uint8List salt,
     required Uint8List password,
     int memoryPowerOf2 = 16,
-    int iterations = 2,
+    int iterations = 1,
     int desiredKeyLength = 32,
   }) {
     final parameters = Argon2Parameters(

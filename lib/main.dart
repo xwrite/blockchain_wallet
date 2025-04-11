@@ -3,6 +3,7 @@ import 'package:blockchain_wallet/data/dao/address_dao.dart';
 import 'package:blockchain_wallet/data/dao/impl/transaction_dao_impl.dart';
 import 'package:blockchain_wallet/data/repository/transaction_repository.dart';
 import 'package:blockchain_wallet/router/app_routes.dart';
+import 'package:blockchain_wallet/service/wallet_service.dart';
 import 'package:blockchain_wallet/widget/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -45,10 +46,13 @@ void bootstrap() async {
   await Get.putAsync(AppPreferences.create);
 
   //注入服务
-  // await Get.putAsync(
-  //   () => WalletService.create(web3Provider: web3Provider),
-  //   permanent: true,
-  // );
+  await Get.putAsync(
+    () => WalletService.create(
+      web3Provider: web3Provider,
+      transactionRepository: Get.find(),
+    ),
+    permanent: true,
+  );
 
   //启用应用
   runApp(const WalletApp());

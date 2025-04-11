@@ -50,7 +50,7 @@ class SendPage extends StatelessWidget {
                 alignment: Alignment.center,
                 child: ElevatedButton(
                   onPressed:  isReadySend ? controller.onTapSend : null,
-                  child: Text(G.text.ok),
+                  child: Text(Global.text.ok),
                 ),
               ),
             ],

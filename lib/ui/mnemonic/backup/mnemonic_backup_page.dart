@@ -19,7 +19,7 @@ class MnemonicBackupPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(G.text.mnemonicBackup),
+        title: Text(Global.text.mnemonicBackup),
       ),
       body: Obx(() {
         final unselectedWordList = state.unselectedWordListRx();

@@ -19,7 +19,7 @@ class CreateWalletPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(G.text.createWallet),
+        title: Text(Global.text.createWallet),
       ),
       body: SecureWidget(builder: (_,__,___){
         return Obx((){
@@ -33,21 +33,21 @@ class CreateWalletPage extends StatelessWidget {
                 buildTextField(
                   isVisiblePassword: isPasswordVisible,
                   onToggleVisiblePassword: state.isPasswordVisibleRx.toggle,
-                  labelText: G.text.passwordRequired,
-                  helperText: G.text.passwordTips,
+                  labelText: Global.text.passwordRequired,
+                  helperText: Global.text.passwordTips,
                   onChanged: (val) => state.password = val,
                 ),
                 buildTextField(
                   isVisiblePassword: isPasswordAgainVisible,
                   onToggleVisiblePassword: state.isPasswordAgainVisibleRx.toggle,
-                  labelText: G.text.passwordAgainRequired,
+                  labelText: Global.text.passwordAgainRequired,
                   onChanged: (val) => state.passwordAgain = val,
                 ),
                 Padding(
                   padding: XEdgeInsets(top: 24),
                   child: ElevatedButton(
                     onPressed: controller.onTapConfirm,
-                    child: Text(G.text.ok),
+                    child: Text(Global.text.ok),
                   ),
                 ),
               ],

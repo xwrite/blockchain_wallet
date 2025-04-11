@@ -16,7 +16,7 @@ class WalletPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(G.text.appName)),
+      appBar: AppBar(title: Text(Global.text.appName)),
       body: Container(
         padding: XEdgeInsets(all: 16),
         alignment: Alignment.center,
@@ -27,13 +27,13 @@ class WalletPage extends StatelessWidget {
               onPressed: () {
                 Get.toNamed(kCreateWalletPage);
               },
-              child: Text(G.text.createWallet),
+              child: Text(Global.text.createWallet),
             ),
             ElevatedButton(
               onPressed: () {
                 Get.toNamed(kImportWalletPage);
               },
-              child: Text(G.text.importWallet),
+              child: Text(Global.text.importWallet),
             ),
           ],
         ),

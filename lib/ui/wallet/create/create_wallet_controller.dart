@@ -14,19 +14,19 @@ class CreateWalletController extends GetxController {
     final password = state.password.trim();
     final passwordAgain = state.passwordAgain.trim();
     if (!PasswordUtil.isValid(password)) {
-      Toast.show(G.text.passwordTips);
+      Toast.show(Global.text.passwordTips);
       return;
     }
     if (passwordAgain.isEmpty) {
-      Toast.show(G.text.passwordAgainRequired);
+      Toast.show(Global.text.passwordAgainRequired);
       return;
     }
     if (password != passwordAgain) {
-      Toast.show(G.text.passwordInputInconsistency);
+      Toast.show(Global.text.passwordInputInconsistency);
       return;
     }
     final result = await Loading.asyncWrapper(
-      () => G.wallet.createWallet(password),
+      () => Global.wallet.createWallet(password),
     );
     if (result) {
       Get.offAllNamed(kHomePage);

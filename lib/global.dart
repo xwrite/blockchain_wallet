@@ -5,8 +5,8 @@ import 'package:get/get.dart';
 import 'service/web3_service.dart';
 
 ///全局对象
-class G{
-  const G._();
+class Global{
+  const Global._();
   
   ///国际化文本
   static S get text => S.current;

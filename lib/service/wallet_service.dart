@@ -2,124 +2,67 @@ import 'dart:convert';
 import 'package:biometric_storage/biometric_storage.dart';
 import 'package:blockchain_wallet/common/extension/hex_extension.dart';
 import 'package:blockchain_wallet/common/util/encrypt_util.dart';
+import 'package:blockchain_wallet/common/util/hex.dart';
 import 'package:blockchain_wallet/common/util/logger.dart';
 import 'package:blockchain_wallet/common/util/secure_storage.dart';
 import 'package:blockchain_wallet/data/api/web3_provider.dart';
+import 'package:blockchain_wallet/data/app_key_store.dart';
 import 'package:blockchain_wallet/data/entity/transaction_entity.dart';
 import 'package:blockchain_wallet/data/repository/transaction_repository.dart';
 import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/ui/authentication/widget/authentication_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:hex/hex.dart';
 import 'package:wallet_core_bindings/wallet_core_bindings.dart';
 
+part 'wallet_guard_mixin.dart';
+
 ///钱包服务
-class WalletService extends GetxService {
+abstract class WalletService extends GetxService {
+  final Web3Provider _web3Provider;
+  final TransactionRepository _transactionRepository;
+  final AppKeyStore _keyStore;
+  bool _hasWallet = false;
+
+  WalletService({
+    required Web3Provider web3Provider,
+    required TransactionRepository transactionRepository,
+    required AppKeyStore keyStore,
+  })  : _web3Provider = web3Provider,
+        _transactionRepository = transactionRepository,
+        _keyStore = keyStore;
+
+  ///是否已设置钱包
+  bool get hasWallet => _hasWallet;
+}
+
+class WalletServiceImpl extends WalletService with _WalletGuardMixin {
   ///转账标准gas Limit
   final transferGasLimit = 21000;
 
-  static const _kWalletEncryptedInfo = '_kWalletEncryptedInfo';
-
-  ///是否已备份助记词
-  static const _kBackupMnemonicTag = '_kBackupMnemonicTag';
-
-  ///是否启用生物识别
-  static const _kBiometricFeature = '_kBiometricFeature';
-  static const _memoryPowerOf2 = 16;
-  static const _iterations = 2;
-  var _hasWallet = false;
-  final RxBool _isBackupMnemonicRx;
-  final RxBool _isBiometricEnabledRx;
-
-  static SecureStorage get _store => SecureStorage();
-
-  TWHDWallet? _wallet;
-  final Web3Provider _web3Provider;
-  final TransactionRepository _transactionRepository;
-
-  WalletService._(
-    this._web3Provider,
-    this._transactionRepository,
-    this._hasWallet,
-    bool isBackupMnemonic,
-    bool isBiometricEnabled,
-  )   : _isBackupMnemonicRx = isBackupMnemonic.obs,
-        _isBiometricEnabledRx = isBiometricEnabled.obs;
+  WalletServiceImpl({
+    required super.web3Provider,
+    required super.transactionRepository,
+    required super.keyStore,
+  });
 
   static Future<WalletService> create({
     required Web3Provider web3Provider,
     required TransactionRepository transactionRepository,
+    required AppKeyStore keyStore,
   }) async {
-    final info = await _store.read(_kWalletEncryptedInfo);
-    final backup = await _store.read(_kBackupMnemonicTag);
-    final biometric = await _store.read(_kBiometricFeature);
-    return WalletService._(
-      web3Provider,
-      transactionRepository,
-      info != null,
-      backup != null,
-      biometric != null,
-    );
+    return WalletServiceImpl(
+      web3Provider: web3Provider,
+      transactionRepository: transactionRepository,
+      keyStore: keyStore,
+    )._init();
   }
 
-  ///是否已设置钱包
-  bool get hasWallet => _hasWallet;
-
-  ///是否已备份助记词
-  bool get isBackupMnemonicRx => _isBackupMnemonicRx.value;
-
-  ///是否已启用指纹识别
-  bool get isBiometricEnabledRx => _isBiometricEnabledRx.value;
-
-  ///钱包是否已打开
-  bool get isOpen => _wallet != null;
-
-  ///钱包助记词
-  String? get mnemonic => _wallet?.mnemonic;
-
-  ///启用生物识别功能，用于保存密码
-  Future<bool> enableBiometric(String password) async {
-    //检查密码
-    if(!await authentication(password)){
-      logger.d('密码错误');
-      return false;
-    }
-
-    try {
-      //检查设备是否支持
-      final resp = await BiometricStorage().canAuthenticate();
-      if (resp != CanAuthenticateResponse.success) {
-        return false;
-      }
-
-      final storage = await BiometricStorage().getStorage(_kBiometricFeature);
-      await storage.write(password);
-      await _store.write(_kBiometricFeature, 'enabled');
-      _isBiometricEnabledRx.value = true;
-      return true;
-    } on AuthException catch (e) {
-      logger.d('AuthException: $e');
-    }
-    return false;
-  }
-
-  ///关闭指纹验证功能
-  Future<bool> disableBiometric() async {
-    try {
-      //检查设备是否支持
-      final resp = await BiometricStorage().canAuthenticate();
-      if (resp != CanAuthenticateResponse.success) {
-        return false;
-      }
-      final storage = await BiometricStorage().getStorage(_kBiometricFeature);
-      await storage.delete();
-      await _store.delete(_kBiometricFeature);
-      _isBiometricEnabledRx.value = false;
-      return true;
-    } on AuthException catch (e) {
-      logger.d('AuthException: $e');
-    }
-    return false;
+  Future<WalletServiceImpl> _init() async {
+    _hasWallet = await _keyStore.getWalletEncryptedData() != null;
+    await _initGuard();
+    return this;
   }
 
   ///认证密码是否正确
@@ -157,13 +100,13 @@ class WalletService extends GetxService {
   }
 
   ///钱包加密信息
-  Future<WalletEncryptedInfo?> _getEncryptedInfo() async {
+  Future<WalletEncryptedData?> _getEncryptedInfo() async {
     final infoStr = await _store.read(_kWalletEncryptedInfo);
     if (infoStr == null) {
       logger.d('钱包不存在');
       return null;
     }
-    return WalletEncryptedInfo.fromJsonString(infoStr);
+    return WalletEncryptedData.fromJsonString(infoStr);
   }
 
   ///获取助记词
@@ -175,7 +118,7 @@ class WalletService extends GetxService {
     }
 
     return compute((args) {
-      final info = args[0] as WalletEncryptedInfo;
+      final info = args[0] as WalletEncryptedData;
       final password = args[1] as String;
       final passwordBytes = utf8.encode(password);
 
@@ -203,8 +146,62 @@ class WalletService extends GetxService {
   }
 
   ///通过密码创建钱包
-  Future<bool> createWallet(String password) {
-    return _createWallet(password: password);
+  Future<void> createWallet(String password) async {
+    final wallet = TWHDWallet();
+
+    final encryptedData = await compute((args) {
+      final password = utf8.encode(args[0]);
+      final mnemonic = utf8.encode(args[1]);
+
+      //通过密码派生AES密钥
+      final salt = EncryptUtil.generateKey(16);
+      final memoryPowerOf2 = 13;
+      final iterations = 1;
+      final desiredKeyLength = 32;
+      final aesKey = EncryptUtil.deriveKeyWithArgon2(
+        password: password,
+        memoryPowerOf2: memoryPowerOf2,
+        salt: salt,
+        iterations: iterations,
+        desiredKeyLength: desiredKeyLength,
+      );
+
+      //AES加密助记词
+      final aesNonce = EncryptUtil.generateKey(16);
+      Uint8List? aad;
+      final tagLength = 16;
+      final encryptedMnemonic = EncryptUtil.aesGcmEncrypt(
+        key: aesKey,
+        data: mnemonic,
+        nonce: aesNonce,
+        aad: aad,
+        tagLength: tagLength,
+      );
+      return WalletEncryptedData(
+        argon2Salt: salt,
+        argon2MemoryPowerOf2: memoryPowerOf2,
+        argon2Iterations: iterations,
+        argon2KeyLength: desiredKeyLength,
+        aesNonce: aesNonce,
+        aesAad: aad,
+        aesTagLength: tagLength,
+        aesEncryptedMnemonic: encryptedMnemonic,
+      ).toJsonString();
+    }, [password, wallet.mnemonic]);
+    
+    //保存加密数据
+    await _keyStore.saveWalletEncryptedData(encryptedData);
+    
+    //保存密码
+    await _keyStore.savePassword(password);
+    
+    //TODO 保存钱包默认地址
+    final address = wallet.getAddressForCoin(TWCoinType.Ethereum);
+
+    wallet.getAddressDerivation(coin, derivation)
+
+    //删除钱包
+    wallet.delete();
   }
 
   ///通过助记词导入钱包
@@ -214,8 +211,7 @@ class WalletService extends GetxService {
   }
 
   ///创建钱包
-  Future<bool> _createWallet(
-      {final String? mnemonic, required String password}) async {
+  Future<TWHDWallet?> _createWallet(String password) async {
     //创建
     final TWHDWallet wallet;
     if (mnemonic != null) {
@@ -245,7 +241,7 @@ class WalletService extends GetxService {
         data: mnemonicBytes,
         nonce: aesNonce,
       );
-      return WalletEncryptedInfo(
+      return WalletEncryptedData(
         salt: salt.encodeHex(),
         nonce: aesNonce.encodeHex(),
         encryptedMnemonic: encryptedMnemonic.encodeHex(),
@@ -312,7 +308,6 @@ class WalletService extends GetxService {
     _isBackupMnemonicRx.value = false;
   }
 
-
   ///转账
   ///- password 钱包密码
   ///- toAddress 接收地址
@@ -324,21 +319,21 @@ class WalletService extends GetxService {
     required String toAddress,
     required BigInt gasPrice,
     required BigInt value,
-  }) async{
+  }) async {
     final fromAddress = getDefaultAddress();
     final privateKey = getDefaultPrivateKey();
-    if(privateKey == null || fromAddress == null){
+    if (privateKey == null || fromAddress == null) {
       logger.w('privateKey or address is null!');
       return null;
     }
     final txHash = await _web3Provider.sendTransaction(
-        privateKey: privateKey,
-        toAddress: toAddress,
-        gasPrice: gasPrice,
-        gasLimit: BigInt.from(transferGasLimit),
-        value: value,
+      privateKey: privateKey,
+      toAddress: toAddress,
+      gasPrice: gasPrice,
+      gasLimit: BigInt.from(transferGasLimit),
+      value: value,
     );
-    if(txHash == null){
+    if (txHash == null) {
       return null;
     }
 
@@ -358,50 +353,79 @@ class WalletService extends GetxService {
   }
 }
 
-///钱包密钥信息
-class WalletEncryptedInfo {
-  ///盐
-  final String salt;
+///钱包加密数据
+class WalletEncryptedData {
+  ///argon2盐
+  final Uint8List argon2Salt;
+
+  ///argon2内存
+  final int argon2MemoryPowerOf2;
+
+  ///argon2迭代次数
+  final int argon2Iterations;
+
+  ///argon2密钥长度
+  final int argon2KeyLength;
 
   ///AES的nonce
-  final String nonce;
+  final Uint8List aesNonce;
+
+  ///AES的附加认证数据
+  final Uint8List? aesAad;
+
+  ///认证标签长度
+  final int aesTagLength;
 
   ///AES加密后的助记词
-  final String encryptedMnemonic;
+  final Uint8List aesEncryptedMnemonic;
 
-  ///密码hash（BCrypt）
-  final String passwordHash;
-
-  WalletEncryptedInfo({
-    required this.salt,
-    required this.nonce,
-    required this.encryptedMnemonic,
-    required this.passwordHash,
+  WalletEncryptedData({
+    required this.argon2Salt,
+    required this.argon2MemoryPowerOf2,
+    required this.argon2Iterations,
+    required this.argon2KeyLength,
+    required this.aesNonce,
+    this.aesAad,
+    required this.aesTagLength,
+    required this.aesEncryptedMnemonic,
   });
 
-  static WalletEncryptedInfo? fromJsonString(String jsonStr) {
+  String toJsonString() {
+    return jsonEncode({
+      'argon2Salt': Hex.encode(argon2Salt),
+      'argon2MemoryPowerOf2': argon2MemoryPowerOf2,
+      'argon2Iterations': argon2Iterations,
+      'argon2KeyLength': argon2KeyLength,
+      'aesNonce': Hex.encode(aesNonce),
+      if (aesAad != null) 'aesAad': Hex.encode(aesAad!),
+      'aesTagLength': aesTagLength,
+      'aesEncryptedMnemonic': Hex.encode(aesEncryptedMnemonic),
+    });
+  }
+
+  static WalletEncryptedData? fromJsonString(String jsonString) {
     try {
-      final json = jsonDecode(jsonStr);
+      final json = jsonDecode(jsonString);
       if (json is Map) {
-        return WalletEncryptedInfo(
-          salt: json['s'],
-          nonce: json['n'],
-          encryptedMnemonic: json['m'],
-          passwordHash: json['p'],
+        final argon2Salt = json['argon2Salt'] as String;
+        final aesNonce = json['aesNonce'] as String;
+        final aesAad = json['aesAad'] as String?;
+        final aesEncryptedMnemonic = json['aesEncryptedMnemonic'] as String;
+
+        return WalletEncryptedData(
+          argon2Salt: Hex.decode(argon2Salt),
+          argon2MemoryPowerOf2: json['argon2MemoryPowerOf2'] as int,
+          argon2Iterations: json['argon2Iterations'] as int,
+          argon2KeyLength: json['argon2KeyLength'] as int,
+          aesNonce: Hex.decode(aesNonce),
+          aesAad: aesAad != null ? Hex.decode(aesAad) : null,
+          aesTagLength: json['aesTagLength'] as int,
+          aesEncryptedMnemonic: Hex.decode(aesEncryptedMnemonic),
         );
       }
     } catch (ex) {
       logger.w(ex);
     }
     return null;
-  }
-
-  String toJsonString() {
-    return jsonEncode({
-      's': salt,
-      'n': nonce,
-      'm': encryptedMnemonic,
-      'p': passwordHash,
-    });
   }
 }

@@ -17,7 +17,7 @@ class MnemonicPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(G.text.mnemonicView),
+        title: Text(Global.text.mnemonicView),
       ),
       body: SecureWidget(builder: (context, onInit, onDispose){
         return Container(
@@ -36,7 +36,7 @@ class MnemonicPage extends StatelessWidget {
                   onPressed: () {
                     Get.offNamed(kMnemonicBackupPage);
                   },
-                  child: Text(G.text.mnemonicBackup),
+                  child: Text(Global.text.mnemonicBackup),
                 ),
               ),
             ],

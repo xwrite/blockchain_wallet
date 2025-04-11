@@ -31,7 +31,7 @@ class SendController extends GetxController with GetAutoDisposeMixin {
       state.amountRx.value = EtherAmountUtil.toWei(value);
     });
 
-    state.addressRx.value = G.wallet.getDefaultAddress() ?? '';
+    state.addressRx.value = Global.wallet.getDefaultAddress() ?? '';
     fetchData();
   }
 
@@ -47,7 +47,7 @@ class SendController extends GetxController with GetAutoDisposeMixin {
     }
 
     //gasLimit
-    state.gasLimitRx.value = BigInt.from(G.wallet.transferGasLimit);
+    state.gasLimitRx.value = BigInt.from(Global.wallet.transferGasLimit);
 
     //gasPrice
     final gasPrice = await _web3Provider.getGasPrice();
@@ -101,7 +101,7 @@ class SendController extends GetxController with GetAutoDisposeMixin {
     }
 
     final txHash = await Loading.asyncWrapper((){
-      return G.wallet.transfer(
+      return Global.wallet.transfer(
         password: password,
         toAddress: state.receiveAddressRx(),
         gasPrice: state.gasPriceRx(),

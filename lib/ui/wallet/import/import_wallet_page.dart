@@ -17,7 +17,7 @@ class ImportWalletPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(G.text.importWallet)),
+      appBar: AppBar(title: Text(Global.text.importWallet)),
       body: SecureWidget(builder: (_,__,___){
         return Padding(
           padding: XEdgeInsets(all: 16),
@@ -30,28 +30,28 @@ class ImportWalletPage extends StatelessWidget {
                 TextField(
                   maxLines: null,
                   decoration: InputDecoration(
-                    labelText: G.text.mnemonicRequired,
+                    labelText: Global.text.mnemonicRequired,
                   ),
                   onChanged: (text) => state.mnemonic = text,
                 ),
                 buildPasswordField(
                   isVisiblePassword: isPasswordVisible,
                   onToggleVisiblePassword: state.isPasswordVisibleRx.toggle,
-                  labelText: G.text.passwordRequired,
-                  helperText: G.text.passwordTips,
+                  labelText: Global.text.passwordRequired,
+                  helperText: Global.text.passwordTips,
                   onChanged: (val) => state.password = val,
                 ),
                 buildPasswordField(
                   isVisiblePassword: isPasswordAgainVisible,
                   onToggleVisiblePassword: state.isPasswordAgainVisibleRx.toggle,
-                  labelText: G.text.passwordAgainRequired,
+                  labelText: Global.text.passwordAgainRequired,
                   onChanged: (val) => state.passwordAgain = val,
                 ),
                 Padding(
                   padding: XEdgeInsets(top: 24),
                   child: ElevatedButton(
                     onPressed: controller.onTapConfirm,
-                    child: Text(G.text.ok),
+                    child: Text(Global.text.ok),
                   ),
                 )
               ],

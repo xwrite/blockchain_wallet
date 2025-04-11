@@ -18,7 +18,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(G.text.appName)),
+      appBar: AppBar(title: Text(Global.text.appName)),
       body: SingleChildScrollView(
         padding: XEdgeInsets(all: 16),
         child: Column(
@@ -47,7 +47,7 @@ class HomePage extends StatelessWidget {
               child: Text('转账记录'),
             ),
             Obx(() {
-              final isEnabled = G.wallet.isBiometricEnabledRx;
+              final isEnabled = Global.wallet.isBiometricEnabledRx;
               return SwitchListTile(
                 value: isEnabled,
                 title: Text('指纹验证'),
@@ -55,10 +55,10 @@ class HomePage extends StatelessWidget {
                   if (value) {
                     final password = await AuthenticationDialog.show();
                     if(password != null && password.isNotEmpty){
-                      G.wallet.enableBiometric(password);
+                      Global.wallet.enableBiometric(password);
                     }
                   } else {
-                    G.wallet.disableBiometric();
+                    Global.wallet.disableBiometric();
                   }
                 },
               );
@@ -77,7 +77,7 @@ class HomePage extends StatelessWidget {
                 onPressed: () async{
                   final password = await AuthenticationDialog.show();
                   if(password != null && password.isNotEmpty){
-                    final isOk = await G.wallet.authentication(password);
+                    final isOk = await Global.wallet.authentication(password);
                     if(isOk){
                       Get.toNamed(kMnemonicPage);
                     }else{
@@ -85,7 +85,7 @@ class HomePage extends StatelessWidget {
                     }
                   }
                 },
-                child: Text('是否已备份助记词（${G.wallet.isBackupMnemonicRx}）'),
+                child: Text('是否已备份助记词（${Global.wallet.isBackupMnemonicRx}）'),
               );
             }),
           ],

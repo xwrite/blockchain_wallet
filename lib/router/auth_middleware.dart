@@ -13,10 +13,10 @@ class AuthMiddleware extends GetMiddleware {
     if (route == null || route.isEmpty || route.startsWith(kPublicPrefix)){
       return null;
     }
-    if(G.wallet.isOpen){
+    if(Global.wallet.isOpen){
       return null;
     }
-    if(G.wallet.hasWallet){
+    if(Global.wallet.hasWallet){
       //有钱包，没打开就要输密码
       return const RouteSettings(name: kAuthenticationPage);
     }else{

@@ -11,14 +11,14 @@ class AuthenticationController extends GetxController {
   Future<void> onTapVerifyPassword() async {
     final password = state.password.trim();
     if (password.isEmpty) {
-      Toast.show(G.text.passwordRequired);
+      Toast.show(Global.text.passwordRequired);
       return;
     }
     final result = await Loading.asyncWrapper((){
-      return G.wallet.authentication(password);
+      return Global.wallet.authentication(password);
     });
     if (!result) {
-      Toast.show(G.text.passwordError);
+      Toast.show(Global.text.passwordError);
       return;
     }
 

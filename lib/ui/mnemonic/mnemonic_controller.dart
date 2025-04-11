@@ -9,7 +9,7 @@ class MnemonicController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    state.mnemonicRx.value = G.wallet.mnemonic ?? '';
+    state.mnemonicRx.value = Global.wallet.mnemonic ?? '';
   }
 
 }
