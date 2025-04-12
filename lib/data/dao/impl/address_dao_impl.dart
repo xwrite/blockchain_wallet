@@ -17,7 +17,7 @@ class AddressDaoImpl extends AddressDao {
     return _database.execute('''
     CREATE TABLE IF NOT EXISTS "$_tableName" (
       "address"	TEXT NOT NULL,
-      "path"	TEXT NOT NULL,
+      "coin"	INTEGER NOT NULL,
       "index"	INTEGER NOT NULL,
       "selected"	INTEGER NOT NULL,
       "createdAt"	INTEGER NOT NULL,
@@ -33,7 +33,7 @@ class AddressDaoImpl extends AddressDao {
         where: 'address=?', whereArgs: [entity.address], limit: 1, offset: 0);
     final values = {
       'address': entity.address,
-      'path': entity.path,
+      'coin': entity.coin,
       'index': entity.index,
       'selected': entity.selected,
       'createdAt': DateTime.now().millisecondsSinceEpoch,

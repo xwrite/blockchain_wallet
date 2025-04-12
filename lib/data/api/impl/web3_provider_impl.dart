@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:blockchain_wallet/common/extension/hex_extension.dart';
+import 'package:blockchain_wallet/common/util/hex.dart';
 import 'package:blockchain_wallet/common/util/logger.dart';
 import 'package:blockchain_wallet/data/entity/transaction_receipt_entity.dart';
 import 'package:web3dart/web3dart.dart';
@@ -85,7 +85,7 @@ class Web3ProviderImpl extends Web3Provider {
           txHash: txHash,
           status: receipt.status,
           gasUsed: receipt.gasUsed,
-          blockHash: '0x${receipt.blockHash.encodeHex()}',
+          blockHash: Hex.encodeWith0x(receipt.blockHash),
           blockNum: receipt.blockNumber.blockNum,
         );
       }

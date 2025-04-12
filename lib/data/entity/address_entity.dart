@@ -5,8 +5,8 @@ class AddressEntity {
   ///地址
   final String address;
 
-  ///派生路径
-  final String path;
+  ///币种类型（https://github.com/satoshilabs/slips/blob/master/slip-0044.md）
+  final int coin;
 
   ///地址index
   final int index;
@@ -22,7 +22,7 @@ class AddressEntity {
 
   AddressEntity({
     required this.address,
-    required this.path,
+    required this.coin,
     required this.index,
     required this.selected,
     required this.createdAt,
@@ -32,7 +32,7 @@ class AddressEntity {
   factory AddressEntity.fromJson(Map<String, dynamic> json){
     return AddressEntity(
       address: json['address'] ?? '',
-      path: json['path'] ?? '',
+      coin: json['coin'] ?? -1,
       index: json['index'] ?? 0,
       selected: json['selected'] ?? 0,
       createdAt: json['createdAt'] ?? 0,
