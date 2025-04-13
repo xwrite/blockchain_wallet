@@ -31,8 +31,8 @@ class SendController extends GetxController with GetAutoDisposeMixin {
       state.amountRx.value = EtherAmountUtil.toWei(value);
     });
 
-    state.addressRx.value = Global.wallet.getDefaultAddress() ?? '';
-    fetchData();
+    // state.addressRx.value = Global.wallet.getDefaultAddress() ?? '';
+    // fetchData();
   }
 
   void fetchData() async {
@@ -47,7 +47,7 @@ class SendController extends GetxController with GetAutoDisposeMixin {
     }
 
     //gasLimit
-    state.gasLimitRx.value = BigInt.from(Global.wallet.transferGasLimit);
+    // state.gasLimitRx.value = BigInt.from(Global.wallet.transferGasLimit);
 
     //gasPrice
     final gasPrice = await _web3Provider.getGasPrice();
@@ -100,23 +100,23 @@ class SendController extends GetxController with GetAutoDisposeMixin {
       return;
     }
 
-    final txHash = await Loading.asyncWrapper((){
-      return Global.wallet.transfer(
-        password: password,
-        toAddress: state.receiveAddressRx(),
-        gasPrice: state.gasPriceRx(),
-        value: state.amountRx(),
-      );
-    });
-
-    if(txHash != null){
-      Toast.show('交易发送成功');
-      Get.offNamed(kTransactionDetailPage, parameters: {
-        'txHash': txHash,
-      });
-    }else{
-      Toast.show('交易发送失败');
-    }
+    // final txHash = await Loading.asyncWrapper((){
+    //   return Global.wallet.transfer(
+    //     password: password,
+    //     toAddress: state.receiveAddressRx(),
+    //     gasPrice: state.gasPriceRx(),
+    //     value: state.amountRx(),
+    //   );
+    // });
+    //
+    // if(txHash != null){
+    //   Toast.show('交易发送成功');
+    //   Get.offNamed(kTransactionDetailPage, parameters: {
+    //     'txHash': txHash,
+    //   });
+    // }else{
+    //   Toast.show('交易发送失败');
+    // }
 
   }
 

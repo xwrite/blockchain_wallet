@@ -12,6 +12,6 @@ class Global{
   static S get text => S.current;
   
   ///钱包
-  static WalletService get wallet => Get.find<WalletService>();
+  // static WalletService get wallet => Get.find<WalletService>();
 
 }

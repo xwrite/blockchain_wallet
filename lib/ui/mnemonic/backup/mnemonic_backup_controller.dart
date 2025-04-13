@@ -15,8 +15,8 @@ class MnemonicBackupController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    final mnemonic = Global.wallet.mnemonic ?? '';
-    state.wordList.addAll(mnemonic.split(' '));
+    // final mnemonic = Global.wallet.mnemonic ?? '';
+    // state.wordList.addAll(mnemonic.split(' '));
     state.unselectedWordListRx.value = List.of(state.wordList)
       ..shuffle(Random.secure());
   }
@@ -48,14 +48,14 @@ class MnemonicBackupController extends GetxController {
         return;
       }
 
-      final result =
-          await Loading.asyncWrapper(() => Global.wallet.backupMnemonic(mnemonic1));
-      if (result) {
-        Toast.show(Global.text.mnemonicBackupSuccess);
-        Get.back(result: true);
-      } else {
-        Toast.show(Global.text.mnemonicBackupFailed);
-      }
+      // final result =
+      //     await Loading.asyncWrapper(() => Global.wallet.backupMnemonic(mnemonic1));
+      // if (result) {
+      //   Toast.show(Global.text.mnemonicBackupSuccess);
+      //   Get.back(result: true);
+      // } else {
+      //   Toast.show(Global.text.mnemonicBackupFailed);
+      // }
     }
   }
 

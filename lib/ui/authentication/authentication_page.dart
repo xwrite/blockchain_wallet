@@ -25,7 +25,7 @@ class AuthenticationPage extends StatelessWidget {
         builder: (_, __, ___){
           return Obx((){
             final isPasswordVisible = state.isPasswordVisibleRx();
-            final isBiometricEnabled = Global.wallet.isBiometricEnabledRx;
+            // final isBiometricEnabled = Global.wallet.isBiometricEnabledRx;
             return Padding(
               padding: XEdgeInsets(all: 16),
               child: Column(
@@ -43,13 +43,13 @@ class AuthenticationPage extends StatelessWidget {
                       child: Text('密码验证'),
                     ),
                   ),
-                  if(isBiometricEnabled) Padding(
-                    padding: XEdgeInsets(top: 16),
-                    child: ElevatedButton(
-                      onPressed: controller.onTapVerifyBiometric,
-                      child: Text('指纹验证'),
-                    ),
-                  ),
+                  // if(isBiometricEnabled) Padding(
+                  //   padding: XEdgeInsets(top: 16),
+                  //   child: ElevatedButton(
+                  //     onPressed: controller.onTapVerifyBiometric,
+                  //     child: Text('指纹验证'),
+                  //   ),
+                  // ),
                 ],
               ),
             );

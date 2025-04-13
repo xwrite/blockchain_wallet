@@ -14,15 +14,15 @@ class AuthenticationController extends GetxController {
       Toast.show(Global.text.passwordRequired);
       return;
     }
-    final result = await Loading.asyncWrapper((){
-      return Global.wallet.authentication(password);
-    });
-    if (!result) {
-      Toast.show(Global.text.passwordError);
-      return;
-    }
-
-    Get.offAllNamed(kHomePage);
+    // final result = await Loading.asyncWrapper((){
+    //   return Global.wallet.authentication(password);
+    // });
+    // if (!result) {
+    //   Toast.show(Global.text.passwordError);
+    //   return;
+    // }
+    //
+    // Get.offAllNamed(kHomePage);
   }
 
   Future<void> onTapVerifyBiometric() async {

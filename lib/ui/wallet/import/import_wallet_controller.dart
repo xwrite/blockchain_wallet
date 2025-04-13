@@ -30,11 +30,11 @@ class ImportWalletController extends GetxController {
       Toast.show(Global.text.passwordInputInconsistency);
       return;
     }
-    final result = await Loading.asyncWrapper(
-      () => Global.wallet.importWallet(mnemonic: mnemonic, password: password),
-    );
-    if (result) {
-      Get.offAllNamed(kHomePage);
-    }
+    // final result = await Loading.asyncWrapper(
+    //   () => Global.wallet.importWallet(mnemonic: mnemonic, password: password),
+    // );
+    // if (result) {
+    //   Get.offAllNamed(kHomePage);
+    // }
   }
 }

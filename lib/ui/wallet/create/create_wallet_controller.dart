@@ -25,11 +25,11 @@ class CreateWalletController extends GetxController {
       Toast.show(Global.text.passwordInputInconsistency);
       return;
     }
-    final result = await Loading.asyncWrapper(
-      () => Global.wallet.createWallet(password),
-    );
-    if (result) {
-      Get.offAllNamed(kHomePage);
-    }
+    // final result = await Loading.asyncWrapper(
+    //   () => Global.wallet.createWallet(password),
+    // );
+    // if (result) {
+    //   Get.offAllNamed(kHomePage);
+    // }
   }
 }

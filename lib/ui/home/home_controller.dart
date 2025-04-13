@@ -14,8 +14,8 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    state.addressRx.value = Global.wallet.getDefaultAddress() ?? '';
-    fetchBalance();
+    // state.addressRx.value = Global.wallet.getDefaultAddress() ?? '';
+    // fetchBalance();
   }
 
   void fetchBalance() async{

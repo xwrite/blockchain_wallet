@@ -46,23 +46,23 @@ class HomePage extends StatelessWidget {
               onPressed: () => Get.toNamed(kTransactionListPage),
               child: Text('转账记录'),
             ),
-            Obx(() {
-              final isEnabled = Global.wallet.isBiometricEnabledRx;
-              return SwitchListTile(
-                value: isEnabled,
-                title: Text('指纹验证'),
-                onChanged: (value) async{
-                  if (value) {
-                    final password = await AuthenticationDialog.show();
-                    if(password != null && password.isNotEmpty){
-                      Global.wallet.enableBiometric(password);
-                    }
-                  } else {
-                    Global.wallet.disableBiometric();
-                  }
-                },
-              );
-            }),
+            // Obx(() {
+              // final isEnabled = Global.wallet.isBiometricEnabledRx;
+              // return SwitchListTile(
+              //   value: isEnabled,
+              //   title: Text('指纹验证'),
+              //   onChanged: (value) async{
+              //     if (value) {
+              //       final password = await AuthenticationDialog.show();
+              //       if(password != null && password.isNotEmpty){
+              //         Global.wallet.enableBiometric(password);
+              //       }
+              //     } else {
+              //       Global.wallet.disableBiometric();
+              //     }
+              //   },
+              // );
+            // }),
             // ElevatedButton(
             //   onPressed: () {
             //     AuthenticationDialog.show(onSuccess: (_) async {
@@ -72,22 +72,22 @@ class HomePage extends StatelessWidget {
             //   },
             //   child: Text(G.text.deleteWallet),
             // ),
-            Obx(() {
-              return ElevatedButton(
-                onPressed: () async{
-                  final password = await AuthenticationDialog.show();
-                  if(password != null && password.isNotEmpty){
-                    final isOk = await Global.wallet.authentication(password);
-                    if(isOk){
-                      Get.toNamed(kMnemonicPage);
-                    }else{
-                      Toast.show('密码错误');
-                    }
-                  }
-                },
-                child: Text('是否已备份助记词（${Global.wallet.isBackupMnemonicRx}）'),
-              );
-            }),
+            // Obx(() {
+            //   return ElevatedButton(
+            //     onPressed: () async{
+            //       final password = await AuthenticationDialog.show();
+            //       if(password != null && password.isNotEmpty){
+            //         final isOk = await Global.wallet.authentication(password);
+            //         if(isOk){
+            //           Get.toNamed(kMnemonicPage);
+            //         }else{
+            //           Toast.show('密码错误');
+            //         }
+            //       }
+            //     },
+            //     child: Text('是否已备份助记词（${Global.wallet.isBackupMnemonicRx}）'),
+            //   );
+            // }),
           ],
         ),
       ),
