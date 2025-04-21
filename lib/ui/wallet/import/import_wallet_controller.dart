@@ -1,4 +1,4 @@
-import 'package:blockchain_wallet/common/util/password_util.dart';
+import 'package:blockchain_wallet/common/util/password_validator.dart';
 import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/router/app_routes.dart';
 import 'package:blockchain_wallet/widget/widget.dart';
@@ -18,10 +18,10 @@ class ImportWalletController extends GetxController {
       Toast.show('请输入有效的助记词(BIP-39)');
       return;
     }
-    if (!PasswordUtil.isValid(password)) {
-      Toast.show(Global.text.passwordTips);
-      return;
-    }
+    // if (!PasswordUtil.isValid(password)) {
+    //   Toast.show(Global.text.passwordTips);
+    //   return;
+    // }
     if (passwordAgain.isEmpty) {
       Toast.show(Global.text.passwordAgainRequired);
       return;

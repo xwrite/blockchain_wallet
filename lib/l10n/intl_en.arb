@@ -1,0 +1,21 @@
+{
+  "appName": "Blockchain Wallet",
+  "passwordTips": "不少于8个字符，必须包含大小写字母、数字",
+  "passwordRequired": "请输入密码",
+  "passwordAgainRequired": "请再次输入密码",
+  "passwordInputInconsistency": "两次密码输入不一致",
+  "passwordError": "密码错误",
+  "passwordVerify": "密码验证",
+  "setPasswordSuccess": "密码设置成功",
+  "ok": "确定",
+  "cancel": "取消",
+  "deleteWallet": "删除钱包",
+  "selectError": "选择错误",
+  "mnemonicView": "查看助记词",
+  "mnemonicBackup": "备份助记词",
+  "mnemonicBackupFailed": "助记词备份失败",
+  "mnemonicBackupSuccess": "助记词备份成功",
+  "createWallet": "创建钱包",
+  "importWallet": "导入钱包",
+  "mnemonicRequired": "请输入助记词"
+}

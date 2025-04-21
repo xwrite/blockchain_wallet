@@ -11,13 +11,15 @@ import 'package:get/get.dart';
 import 'package:http/http.dart';
 import 'package:wallet_core_bindings_native/wallet_core_bindings_native.dart';
 import 'package:web3dart/web3dart.dart';
-import 'app_config.dart';
+import 'common/app_config.dart';
 import 'data/app_database.dart';
 import 'data/app_preferences.dart';
 import 'data/dao/impl/address_dao_impl.dart';
 import 'data/dao/transaction_dao.dart';
 import 'generated/l10n.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+
+import 'global.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -77,6 +79,7 @@ class WalletApp extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: S.delegate.supportedLocales,
+        locale: Global.preferences.locale,
       ),
     );
   }

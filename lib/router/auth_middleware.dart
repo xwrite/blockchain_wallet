@@ -10,9 +10,9 @@ class AuthMiddleware extends GetMiddleware {
 
   @override
   RouteSettings? redirect(String? route) {
-    // if (route == null || route.isEmpty || route.startsWith(kPublicPrefix)){
-    //   return null;
-    // }
+    if (route == null || route.isEmpty || route.startsWith(kPublicPrefix)){
+      return null;
+    }
     // if(Global.wallet.isOpen){
     //   return null;
     // }
@@ -20,8 +20,8 @@ class AuthMiddleware extends GetMiddleware {
     //   //有钱包，没打开就要输密码
     //   return const RouteSettings(name: kAuthenticationPage);
     // }else{
-    //   //没钱包，去欢迎页
-    //   return const RouteSettings(name: kWalletPage);
+      //没钱包，去欢迎页
+      return const RouteSettings(name: kWalletPage);
     // }
   }
 
