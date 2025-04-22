@@ -1,5 +1,5 @@
 import 'package:biometric_storage/biometric_storage.dart';
-import 'package:blockchain_wallet/common/util/encrypt_util.dart';
+import 'package:blockchain_wallet/common/util/crypto_util.dart';
 import 'package:blockchain_wallet/common/util/logger.dart';
 import 'package:blockchain_wallet/common/util/secure_storage.dart';
 
@@ -20,7 +20,7 @@ class AppKeyStore {
 
   ///保存钱包密码(hash)
   Future<bool> savePassword(String password) async {
-    final value = EncryptUtil.hashPassword(password);
+    final value = CryptoUtil.hashPassword(password);
     await _storage.write(_kPasswordHash, value);
     return true;
   }
@@ -29,7 +29,7 @@ class AppKeyStore {
   Future<bool> verifyPassword(String password) async {
     final value = await _storage.read(_kPasswordHash);
     if (value != null) {
-      return EncryptUtil.checkPassword(password, value);
+      return CryptoUtil.checkPassword(password, value);
     }
     return false;
   }

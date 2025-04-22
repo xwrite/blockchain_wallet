@@ -1,6 +1,7 @@
 import 'package:blockchain_wallet/common/util/password_validator.dart';
 import 'package:blockchain_wallet/global.dart';
-import 'package:blockchain_wallet/widget/toast.dart';
+import 'package:blockchain_wallet/router/app_routes.dart';
+import 'package:blockchain_wallet/widget/widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
@@ -11,20 +12,29 @@ class CreateWalletController extends GetxController {
   final accountNameFieldController = TextEditingController(text: '钱包');
   final passwordFieldController = TextEditingController();
   final passwordAgainFieldController = TextEditingController();
+  final formKey = GlobalKey();
 
   @override
   void onInit() {
     super.onInit();
-
+    accountNameFieldController.addListener(_checkFormReady);
+    passwordAgainFieldController.addListener(_checkFormReady);
     passwordFieldController.addListener(() {
-      state.passwordRx.value = passwordFieldController.text;
+      _checkFormReady();
       state.passwordConditionsRx.value = PasswordValidator.test(
-        state.passwordRx(),
+        passwordFieldController.text,
       );
     });
   }
 
-  String? accountNameValidator(String? value){
+  void _checkFormReady() {
+    state.isFormReadyRx.value =
+        accountNameValidator(accountNameFieldController.text) == null &&
+            passwordValidator(passwordFieldController.text) == null &&
+            passwordAgainValidator(passwordAgainFieldController.text) == null;
+  }
+
+  String? accountNameValidator(String? value) {
     final length = value?.length ?? 0;
     if (length < 2 || length > 14) {
       return '需包含2-14个字符';
@@ -32,39 +42,29 @@ class CreateWalletController extends GetxController {
     return null;
   }
 
-  String? passwordValidator(final String? value){
+  String? passwordValidator(final String? value) {
     final result = PasswordValidator.isValid(value ?? '');
     return result ? null : '密码无效';
   }
 
-  String? passwordAgainValidator(final String? value){
-    if (value != state.passwordRx()) {
+  String? passwordAgainValidator(final String? value) {
+    if (value != passwordFieldController.text) {
       return '两次密码输入不一致';
     }
     return null;
   }
 
   Future<void> onTapConfirm() async {
-    final password = state.passwordRx();
-    final passwordAgain = passwordAgainFieldController.text;
-    // if (!PasswordUtil.isValid(password)) {
-    //   Toast.show(Global.text.passwordTips);
-    //   return;
-    // }
-    if (passwordAgain.isEmpty) {
-      Toast.show(Global.text.passwordAgainRequired);
-      return;
+    final accountName = accountNameFieldController.text;
+    final password = passwordFieldController.text;
+    final result = await Loading.asyncWrapper(
+      () => Global.wallet.createWallet(name: accountName, password: password),
+    );
+    if (result) {
+      Get.offAllNamed(kMnemonicPage);
+    } else {
+      Toast.show('创建失败');
     }
-    if (password != passwordAgain) {
-      Toast.show(Global.text.passwordInputInconsistency);
-      return;
-    }
-    // final result = await Loading.asyncWrapper(
-    //   () => Global.wallet.createWallet(password),
-    // );
-    // if (result) {
-    //   Get.offAllNamed(kHomePage);
-    // }
   }
 
   @override

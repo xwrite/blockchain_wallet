@@ -48,13 +48,12 @@ void bootstrap() async {
   await Get.putAsync(AppPreferences.create);
 
   //注入服务
-  // await Get.putAsync(
-  //   () => WalletService.create(
-  //     web3Provider: web3Provider,
-  //     transactionRepository: Get.find(),
-  //   ),
-  //   permanent: true,
-  // );
+  await Get.putAsync(
+    () => WalletService.create(
+      web3Provider: web3Provider
+    ),
+    permanent: true,
+  );
 
   //启用应用
   runApp(const WalletApp());

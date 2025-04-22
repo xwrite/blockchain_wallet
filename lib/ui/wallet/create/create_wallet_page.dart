@@ -22,6 +22,7 @@ class CreateWalletPage extends StatelessWidget {
         title: Text(Global.text.createWallet),
       ),
       body: Form(
+        key: controller.formKey,
         autovalidateMode: AutovalidateMode.onUnfocus,
         child: SingleChildScrollView(
           padding: XEdgeInsets(all: 16),

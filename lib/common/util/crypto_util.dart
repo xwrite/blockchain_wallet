@@ -5,8 +5,8 @@ import 'package:blockchain_wallet/common/extension/byte_extension.dart';
 import 'package:pointycastle/export.dart';
 
 ///加密工具类
-class EncryptUtil {
-  EncryptUtil._();
+class CryptoUtil {
+  CryptoUtil._();
 
   /// 生成 256 位 AES 密钥（32字节）
   static Uint8List generateAesKey() {
@@ -168,13 +168,13 @@ class EncryptUtil {
 
   ///argon2密钥生成
   ///- salt 加盐
-  ///- password 密码
+  ///- key 密码
   ///- memoryPowerOf2 算法运行时所消耗的内存(2的16次方=64M)
   ///- iterations 迭代次数
   ///- desiredKeyLength 输出密钥长度（32字节=256位）
-  static Uint8List deriveKeyWithArgon2({
+  static Uint8List argon2({
     required Uint8List salt,
-    required Uint8List password,
+    required Uint8List key,
     int memoryPowerOf2 = 16,
     int iterations = 1,
     int desiredKeyLength = 32,
@@ -191,7 +191,7 @@ class EncryptUtil {
     final gen = Argon2BytesGenerator();
     gen.init(parameters);
 
-    return gen.process(password);
+    return gen.process(key);
   }
 
   ///密码哈希
