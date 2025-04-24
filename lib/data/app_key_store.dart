@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:biometric_storage/biometric_storage.dart';
 import 'package:blockchain_wallet/common/util/crypto_util.dart';
 import 'package:blockchain_wallet/common/util/logger.dart';
@@ -10,8 +13,28 @@ class AppKeyStore {
   static const _kPassword = '_kPassword';
   static const _kHasBiometricPassword = '_kHasBiometricPassword';
   static const _kWalletEncryptedData = '_kWalletEncryptedData';
+  static const _kEncryptedMnemonic= '_kEncryptedMnemonic';
 
   final _storage = SecureStorage();
+
+  ///保存钱包助记词
+  ///- data 加密助记词
+  Future<void> saveEncryptedMnemonic(Uint8List data){
+    return _storage.write(_kEncryptedMnemonic, base64Encode(data));
+  }
+
+  ///获取钱包助记词
+  Future<Uint8List?> getEncryptedMnemonic() async{
+    try{
+      final data = await _storage.read(_kEncryptedMnemonic);
+      if(data != null){
+        return base64Decode(data);
+      }
+    }catch(ex){
+      logger.w('获取钱包助记词失败，$ex');
+    }
+    return null;
+  }
 
   ///是否已设置钱包密码
   Future<bool> hasPassword() async {

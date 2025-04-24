@@ -60,11 +60,7 @@ class CreateWalletController extends GetxController {
     final result = await Loading.asyncWrapper(
       () => Global.wallet.createWallet(name: accountName, password: password),
     );
-    if (result) {
-      Get.offAllNamed(kMnemonicPage);
-    } else {
-      Toast.show('创建失败');
-    }
+    Get.offAllNamed(kMnemonicPage);
   }
 
   @override

@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import 'dao/impl/address_dao_impl.dart';
+import 'dao/impl/account_dao_impl.dart';
 import 'dao/impl/transaction_dao_impl.dart';
 
 
@@ -17,7 +17,7 @@ class AppDatabase {
   ///初始化数据库
   static Future<AppDatabase> create() async {
     final dir = await getDatabasesPath();
-    final path = join(dir, 'app.db');
+    final path = join(dir, 'app1.db');
     final database = await openDatabase(path, version: 1, onCreate: _onCreate);
     return AppDatabase._(database);
   }
@@ -25,7 +25,7 @@ class AppDatabase {
   ///数据库创建时，创建数据库表
   static Future<void> _onCreate(Database db, int version) async {
     await TransactionDaoImpl(db).createTable();
-    await AddressDaoImpl(db).createTable();
+    await AccountDaoImpl(db).createTable();
   }
 
   ///创建dao

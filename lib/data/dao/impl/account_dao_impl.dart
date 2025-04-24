@@ -1,15 +1,15 @@
-import 'package:blockchain_wallet/data/dao/address_dao.dart';
-import 'package:blockchain_wallet/data/entity/address_entity.dart';
+import 'package:blockchain_wallet/data/dao/account_dao.dart';
+import 'package:blockchain_wallet/data/entity/account_entity.dart';
 import 'package:sqflite/sqflite.dart';
 
 
-///地址 DAO
-class AddressDaoImpl extends AddressDao {
-  static const _tableName = 'address';
+///账户 DAO
+class AccountDaoImpl extends AccountDao {
+  static const _tableName = 'table_account';
 
   final Database _database;
 
-  AddressDaoImpl(this._database);
+  AccountDaoImpl(this._database);
 
   ///创建表
   @override
@@ -28,7 +28,7 @@ class AddressDaoImpl extends AddressDao {
   }
 
   @override
-  Future<void> insertOrUpdate(AddressEntity entity) async {
+  Future<void> insertOrUpdate(AccountEntity entity) async {
     final results = await _database.query(_tableName,
         where: 'address=?', whereArgs: [entity.address], limit: 1, offset: 0);
     final values = {
@@ -61,7 +61,7 @@ class AddressDaoImpl extends AddressDao {
   }
 
   @override
-  Future<List<AddressEntity>> findPage({
+  Future<List<AccountEntity>> findPage({
     required int page,
     required int pageSize,
   }) async {
@@ -71,15 +71,31 @@ class AddressDaoImpl extends AddressDao {
       offset: (page - 1) * pageSize,
       limit: pageSize,
     );
-    return results.map((e) => AddressEntity.fromJson(e)).toList();
+    return results.map((e) => AccountEntity.fromJson(e)).toList();
   }
 
   @override
-  Future<List<AddressEntity>> findAll() async {
+  Future<List<AccountEntity>> findAll() async {
     final results = await _database.query(
       _tableName,
       orderBy: 'createdAt desc',
     );
-    return results.map((e) => AddressEntity.fromJson(e)).toList();
+    return results.map((e) => AccountEntity.fromJson(e)).toList();
+  }
+
+  @override
+  Future<AccountEntity?> findByAddress(String address) async{
+    final results = await _database.query(
+      _tableName,
+      where: 'address=?',
+      whereArgs: [address],
+      limit: 1,
+      offset: 0,
+    );
+    if(results.isNotEmpty){
+      return AccountEntity.fromJson(results.first);
+    }else{
+      return null;
+    }
   }
 }

@@ -1,6 +1,6 @@
 
-///钱包地址
-class AddressEntity {
+///账户
+class AccountEntity {
 
   ///地址
   final String address;
@@ -20,7 +20,7 @@ class AddressEntity {
   ///更新时间
   final int updatedAt;
 
-  AddressEntity({
+  AccountEntity({
     required this.address,
     required this.coin,
     required this.index,
@@ -29,8 +29,8 @@ class AddressEntity {
     required this.updatedAt,
   });
 
-  factory AddressEntity.fromJson(Map<String, dynamic> json){
-    return AddressEntity(
+  factory AccountEntity.fromJson(Map<String, dynamic> json){
+    return AccountEntity(
       address: json['address'] ?? '',
       coin: json['coin'] ?? -1,
       index: json['index'] ?? 0,

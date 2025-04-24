@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:blockchain_wallet/data/api/impl/web3_provider_impl.dart';
-import 'package:blockchain_wallet/data/dao/address_dao.dart';
+import 'package:blockchain_wallet/data/app_key_store.dart';
+import 'package:blockchain_wallet/data/dao/account_dao.dart';
 import 'package:blockchain_wallet/data/dao/impl/transaction_dao_impl.dart';
+import 'package:blockchain_wallet/data/repository/account_repository.dart';
 import 'package:blockchain_wallet/data/repository/transaction_repository.dart';
 import 'package:blockchain_wallet/router/app_routes.dart';
 import 'package:blockchain_wallet/service/wallet_service.dart';
@@ -12,9 +16,10 @@ import 'package:http/http.dart';
 import 'package:wallet_core_bindings_native/wallet_core_bindings_native.dart';
 import 'package:web3dart/web3dart.dart';
 import 'common/app_config.dart';
+import 'common/util/crypto/aes_gcm.dart';
 import 'data/app_database.dart';
 import 'data/app_preferences.dart';
-import 'data/dao/impl/address_dao_impl.dart';
+import 'data/dao/impl/account_dao_impl.dart';
 import 'data/dao/transaction_dao.dart';
 import 'generated/l10n.dart';
 import 'package:flutter_portal/flutter_portal.dart';
@@ -29,9 +34,15 @@ void main() {
 void bootstrap() async {
   await WalletCoreBindingsNativeImpl().initialize();
 
+  //keystore
+  Get.put(AppKeyStore());
+
+  //应用偏好设置
+  await Get.putAsync(AppPreferences.create);
+
   //数据库
   final database = await Get.putAsync(AppDatabase.create);
-  Get.lazyPut<AddressDao>(() => database.createDao(AddressDaoImpl.new));
+  Get.lazyPut<AccountDao>(() => database.createDao(AccountDaoImpl.new));
   Get.lazyPut<TransactionDao>(() => database.createDao(TransactionDaoImpl.new));
 
   final web3Provider = Web3ProviderImpl(
@@ -43,15 +54,15 @@ void bootstrap() async {
         transactionDao: Get.find(),
         web3provider: web3Provider,
       ));
+  Get.lazyPut(() => AccountRepository(accountDao: Get.find()));
 
-  //应用偏好设置
-  await Get.putAsync(AppPreferences.create);
 
   //注入服务
   await Get.putAsync(
     () => WalletService.create(
-      web3Provider: web3Provider
-    ),
+        keystore: Get.find(),
+        accountRepository: Get.find(),
+        web3Provider: web3Provider),
     permanent: true,
   );
 

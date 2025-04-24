@@ -4,7 +4,7 @@ import '../transaction_dao.dart';
 
 ///交易记录 DAO
 class TransactionDaoImpl extends TransactionDao {
-  static const _tableName = 'transaction';
+  static const _tableName = 'table_transaction';
 
   final Database _database;
 
