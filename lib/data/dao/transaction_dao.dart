@@ -12,6 +12,9 @@ abstract class TransactionDao {
   ///删除
   Future<void> deleteByTxHash(String txHash);
 
+  ///删除所有数据
+  Future<void> deleteAll();
+
   ///查询
   Future<TransactionEntity?> findByTxHash(String txHash);
 

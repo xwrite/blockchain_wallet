@@ -177,6 +177,62 @@
             </list>
           </value>
         </entry>
+        <entry key="flutter_inappwebview">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_inappwebview-6.2.0-beta.2/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_inappwebview_android">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_inappwebview_android-1.2.0-beta.2/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_inappwebview_internal_annotations">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_inappwebview_internal_annotations-1.2.0/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_inappwebview_ios">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_inappwebview_ios-1.2.0-beta.2/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_inappwebview_macos">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_inappwebview_macos-1.2.0-beta.2/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_inappwebview_platform_interface">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_inappwebview_platform_interface-1.4.0-beta.2/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_inappwebview_web">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_inappwebview_web-1.2.0-beta.2/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_inappwebview_windows">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_inappwebview_windows-0.7.0-beta.2/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="flutter_lints">
           <value>
             <list>
@@ -841,6 +897,14 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/file-7.0.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/fixnum-1.1.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_easyloading-3.0.5/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_inappwebview-6.2.0-beta.2/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_inappwebview_android-1.2.0-beta.2/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_inappwebview_internal_annotations-1.2.0/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_inappwebview_ios-1.2.0-beta.2/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_inappwebview_macos-1.2.0-beta.2/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_inappwebview_platform_interface-1.4.0-beta.2/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_inappwebview_web-1.2.0-beta.2/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_inappwebview_windows-0.7.0-beta.2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_lints-5.0.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_portal-1.1.4/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.flutter-io.cn/flutter_secure_storage-9.2.4/lib" />

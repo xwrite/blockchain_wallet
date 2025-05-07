@@ -13,6 +13,9 @@ class WalletService extends GetxService {
   final Web3Provider _web3Provider;
   final AccountRepository _accountRepository;
 
+  ///当前使用的账户
+  AccountEntity? _account;
+
   WalletService._({
     required AppKeyStore keystore,
     required Web3Provider web3Provider,
@@ -30,7 +33,33 @@ class WalletService extends GetxService {
       keystore: keystore,
       web3Provider: web3Provider,
       accountRepository: accountRepository,
-    );
+    ).._init();
+  }
+
+  Future<void> _init() async {
+    _account = await _accountRepository.getSelectedAccount();
+  }
+
+  ///当前使用的账户
+  AccountEntity get account => _account!;
+
+  ///是否已创建账户
+  bool get hasAccount => _account != null;
+
+  ///查询余额
+  Future<BigInt?> getBalance() async {
+    if (hasAccount) {
+      return _web3Provider.getBalance(account.address);
+    } else {
+      return null;
+    }
+  }
+
+  ///重置钱包
+  Future<void> resetWallet() async{
+    await _keystore.deleteAll();
+    await _accountRepository.deleteAllAccount();
+    _account = null;
   }
 
   ///创建钱包
@@ -60,5 +89,6 @@ class WalletService extends GetxService {
       updatedAt: DateTime.now().millisecondsSinceEpoch,
     );
     await _accountRepository.saveAccount(account);
+    _account = account;
   }
 }

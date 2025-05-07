@@ -11,6 +11,7 @@ class AccountRepository {
     required AccountDao accountDao,
   })  : _accountDao = accountDao;
 
+
   ///插入或更新
   Future<void> saveAccount(AccountEntity entity) {
     return _accountDao.insertOrUpdate(entity);
@@ -26,6 +27,16 @@ class AccountRepository {
     return  _accountDao.findByAddress(address);
   }
 
+  ///获取当前选中的账户
+  Future<AccountEntity?> getSelectedAccount() {
+    return  _accountDao.findSelected();
+  }
+
+  ///设置选中的账户
+  Future<void> updateSelectedAccount(String address) {
+    return  _accountDao.updateSelectedByAddress(address);
+  }
+
   ///分页查询
   Future<List<AccountEntity>> getAccountPage({
     required int page,
@@ -33,4 +44,10 @@ class AccountRepository {
   }) {
     return _accountDao.findPage(page: page, pageSize: pageSize);
   }
+
+  ///删除所有账户
+  Future<void> deleteAllAccount(){
+    return _accountDao.deleteAll();
+  }
+
 }

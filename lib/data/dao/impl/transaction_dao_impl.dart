@@ -97,4 +97,10 @@ class TransactionDaoImpl extends TransactionDao {
     );
     return results.map((e) => TransactionEntity.fromJson(e)).toList();
   }
+
+  @override
+  Future<void> deleteAll() async {
+    await _database.transaction((txn) => txn.delete(_tableName));
+  }
+
 }

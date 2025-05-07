@@ -13,6 +13,12 @@ class AuthMiddleware extends GetMiddleware {
     if (route == null || route.isEmpty || route.startsWith(kPublicPrefix)){
       return null;
     }
+
+    //已创建账户
+    if(Global.wallet.hasAccount){
+      return null;
+    }
+
     // if(Global.wallet.isOpen){
     //   return null;
     // }

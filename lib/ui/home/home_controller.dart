@@ -9,19 +9,18 @@ import 'home_state.dart';
 
 class HomeController extends GetxController {
   final HomeState state = HomeState();
-  final _web3Provider = Get.find<Web3Provider>();
 
   @override
   void onInit() {
     super.onInit();
-    // state.addressRx.value = Global.wallet.getDefaultAddress() ?? '';
-    // fetchBalance();
+    state.addressRx.value = Global.wallet.account.address;
+    fetchBalance();
   }
 
   void fetchBalance() async{
     final address = state.addressRx();
     if(address.isNotEmpty){
-      final balance = await _web3Provider.getBalance(address);
+      final balance = await Global.wallet.getBalance();
       if(balance != null){
         state.balanceRx.value = balance;
       }

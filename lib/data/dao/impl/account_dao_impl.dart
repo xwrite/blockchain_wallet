@@ -2,7 +2,6 @@ import 'package:blockchain_wallet/data/dao/account_dao.dart';
 import 'package:blockchain_wallet/data/entity/account_entity.dart';
 import 'package:sqflite/sqflite.dart';
 
-
 ///账户 DAO
 class AccountDaoImpl extends AccountDao {
   static const _tableName = 'table_account';
@@ -13,7 +12,7 @@ class AccountDaoImpl extends AccountDao {
 
   ///创建表
   @override
-  Future<void> createTable(){
+  Future<void> createTable() {
     return _database.execute('''
     CREATE TABLE IF NOT EXISTS "$_tableName" (
       "address"	TEXT NOT NULL,
@@ -84,7 +83,7 @@ class AccountDaoImpl extends AccountDao {
   }
 
   @override
-  Future<AccountEntity?> findByAddress(String address) async{
+  Future<AccountEntity?> findByAddress(String address) async {
     final results = await _database.query(
       _tableName,
       where: 'address=?',
@@ -92,10 +91,50 @@ class AccountDaoImpl extends AccountDao {
       limit: 1,
       offset: 0,
     );
-    if(results.isNotEmpty){
+    if (results.isNotEmpty) {
       return AccountEntity.fromJson(results.first);
-    }else{
+    } else {
       return null;
     }
   }
+
+  @override
+  Future<AccountEntity?> findSelected() async {
+    final results = await _database.query(
+      _tableName,
+      where: 'selected=?',
+      whereArgs: [1],
+      limit: 1,
+      offset: 0,
+    );
+    if (results.isNotEmpty) {
+      return AccountEntity.fromJson(results.first);
+    } else {
+      return null;
+    }
+  }
+
+  @override
+  Future<void> updateSelectedByAddress(String address) async {
+    await _database.transaction((txn) async {
+      txn.update(
+        _tableName,
+        {'selected': 0},
+        where: 'address != ?',
+        whereArgs: [address],
+      );
+      txn.update(
+        _tableName,
+        {'selected': 1},
+        where: 'address = ?',
+        whereArgs: [address],
+      );
+    });
+  }
+
+  @override
+  Future<void> deleteAll() async {
+    await _database.transaction((txn) => txn.delete(_tableName));
+  }
+
 }

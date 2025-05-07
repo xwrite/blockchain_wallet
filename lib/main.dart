@@ -16,7 +16,6 @@ import 'package:http/http.dart';
 import 'package:wallet_core_bindings_native/wallet_core_bindings_native.dart';
 import 'package:web3dart/web3dart.dart';
 import 'common/app_config.dart';
-import 'common/util/crypto/aes_gcm.dart';
 import 'data/app_database.dart';
 import 'data/app_preferences.dart';
 import 'data/dao/impl/account_dao_impl.dart';
@@ -25,6 +24,7 @@ import 'generated/l10n.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 
 import 'global.dart';
+import 'ui/wallet/wallet_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,13 +56,13 @@ void bootstrap() async {
       ));
   Get.lazyPut(() => AccountRepository(accountDao: Get.find()));
 
-
   //注入服务
   await Get.putAsync(
     () => WalletService.create(
-        keystore: Get.find(),
-        accountRepository: Get.find(),
-        web3Provider: web3Provider),
+      keystore: Get.find(),
+      accountRepository: Get.find(),
+      web3Provider: web3Provider,
+    ),
     permanent: true,
   );
 
@@ -79,7 +79,8 @@ class WalletApp extends StatelessWidget {
       child: GetMaterialApp(
         title: 'Blockchain Wallet',
         builder: Loading.init(),
-        getPages: routeConfigs,
+        // getPages: routeConfigs,
+        home: WalletPage(),
         initialRoute: kHomePage,
         debugShowCheckedModeBanner: false,
         localizationsDelegates: const [

@@ -117,4 +117,9 @@ class AppKeyStore {
     return _storage.read(_kWalletEncryptedData);
   }
 
+  ///清空数据
+  Future<void> deleteAll(){
+    return _storage.deleteAll();
+  }
+
 }
