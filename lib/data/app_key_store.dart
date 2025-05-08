@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:biometric_storage/biometric_storage.dart';
-import 'package:blockchain_wallet/common/util/crypto_util.dart';
-import 'package:blockchain_wallet/common/util/logger.dart';
-import 'package:blockchain_wallet/common/util/secure_storage.dart';
+import 'package:blockchain_wallet/common/utils/crypto_util.dart';
+import 'package:blockchain_wallet/common/utils/logger.dart';
+import 'package:blockchain_wallet/common/utils/secure_storage.dart';
 
 ///APP密钥存储库
 class AppKeyStore {

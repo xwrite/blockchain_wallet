@@ -1,9 +1,9 @@
 // import 'dart:convert';
 // import 'package:biometric_storage/biometric_storage.dart';
-// import 'package:blockchain_wallet/common/util/encrypt_util.dart';
-// import 'package:blockchain_wallet/common/util/hex.dart';
-// import 'package:blockchain_wallet/common/util/logger.dart';
-// import 'package:blockchain_wallet/common/util/secure_storage.dart';
+// import 'package:blockchain_wallet/common/utils/encrypt_util.dart';
+// import 'package:blockchain_wallet/common/utils/hex.dart';
+// import 'package:blockchain_wallet/common/utils/logger.dart';
+// import 'package:blockchain_wallet/common/utils/secure_storage.dart';
 // import 'package:blockchain_wallet/data/api/web3_provider.dart';
 // import 'package:blockchain_wallet/data/app_key_store.dart';
 // import 'package:blockchain_wallet/data/entity/transaction_entity.dart';

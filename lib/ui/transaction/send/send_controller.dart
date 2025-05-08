@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:blockchain_wallet/common/mixin/get_auto_dispose_mixin.dart';
-import 'package:blockchain_wallet/common/util/ether_amount_util.dart';
-import 'package:blockchain_wallet/common/util/logger.dart';
+import 'package:blockchain_wallet/common/utils/ether_amount_util.dart';
+import 'package:blockchain_wallet/common/utils/logger.dart';
 import 'package:blockchain_wallet/data/api/web3_provider.dart';
 import 'package:blockchain_wallet/global.dart';
 import 'package:blockchain_wallet/router/app_routes.dart';

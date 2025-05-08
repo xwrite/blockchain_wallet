@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:blockchain_wallet/common/util/crypto/aes_gcm.dart';
+import 'package:blockchain_wallet/common/utils/crypto/aes_gcm.dart';
 import 'package:blockchain_wallet/data/api/web3_provider.dart';
 import 'package:blockchain_wallet/data/app_key_store.dart';
 import 'package:blockchain_wallet/data/entity/account_entity.dart';

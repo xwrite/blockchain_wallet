@@ -1,5 +1,5 @@
 
-import 'package:blockchain_wallet/common/util/ether_amount_util.dart';
+import 'package:blockchain_wallet/common/utils/ether_amount_util.dart';
 
 extension AmountFormatExtension on BigInt{
 

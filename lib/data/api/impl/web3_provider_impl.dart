@@ -1,6 +1,6 @@
 import 'dart:typed_data';
-import 'package:blockchain_wallet/common/util/hex.dart';
-import 'package:blockchain_wallet/common/util/logger.dart';
+import 'package:blockchain_wallet/common/utils/hex.dart';
+import 'package:blockchain_wallet/common/utils/logger.dart';
 import 'package:blockchain_wallet/data/entity/transaction_receipt_entity.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:wallet/wallet.dart';

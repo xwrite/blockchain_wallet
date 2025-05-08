@@ -1,5 +1,5 @@
 
-import 'package:blockchain_wallet/common/util/logger.dart';
+import 'package:blockchain_wallet/common/utils/logger.dart';
 import 'package:blockchain_wallet/data/api/web3_provider.dart';
 import 'package:blockchain_wallet/data/app_key_store.dart';
 import 'package:blockchain_wallet/data/repository/transaction_repository.dart';

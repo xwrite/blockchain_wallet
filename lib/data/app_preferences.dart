@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'package:blockchain_wallet/common/util/local_storage.dart';
-import 'package:blockchain_wallet/common/util/logger.dart';
+import 'package:blockchain_wallet/common/utils/local_storage.dart';
+import 'package:blockchain_wallet/common/utils/logger.dart';
 import 'package:blockchain_wallet/generated/l10n.dart';
 import 'package:blockchain_wallet/global.dart';
 import 'package:get/get.dart';

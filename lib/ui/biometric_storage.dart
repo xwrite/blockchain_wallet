@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:biometric_storage/biometric_storage.dart';
-import 'package:blockchain_wallet/common/util/logger.dart';
+import 'package:blockchain_wallet/common/utils/logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

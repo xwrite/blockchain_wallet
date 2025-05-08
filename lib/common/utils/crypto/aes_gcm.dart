@@ -1,7 +1,8 @@
 import 'dart:math';
 import 'dart:typed_data';
-import 'package:blockchain_wallet/common/util/logger.dart';
 import 'package:pointycastle/export.dart';
+
+import '../logger.dart';
 
 ///AES/GCM(Pbkdf2将简单密码派生安全密钥)
 class AesGcm {
