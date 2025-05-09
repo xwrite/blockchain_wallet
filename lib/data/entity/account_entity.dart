@@ -15,10 +15,10 @@ class AccountEntity {
   final int selected;
 
   ///创建时间
-  final int createdAt;
+  final DateTime createdAt;
 
   ///更新时间
-  final int updatedAt;
+  final DateTime updatedAt;
 
   AccountEntity({
     required this.address,
@@ -35,8 +35,8 @@ class AccountEntity {
       coin: json['coin'] ?? -1,
       index: json['index'] ?? 0,
       selected: json['selected'] ?? 0,
-      createdAt: json['createdAt'] ?? 0,
-      updatedAt: json['updatedAt'] ?? 0,
+      createdAt: DateTime.fromMillisecondsSinceEpoch(json['createdAt'] ?? 0),
+      updatedAt: DateTime.fromMillisecondsSinceEpoch(json['updatedAt'] ?? 0),
     );
   }
 }

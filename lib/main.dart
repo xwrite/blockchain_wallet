@@ -15,7 +15,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart';
 import 'package:wallet_core_bindings_native/wallet_core_bindings_native.dart';
 import 'package:web3dart/web3dart.dart';
-import 'common/app_config.dart';
+import 'config/app_config.dart';
 import 'data/app_database.dart';
 import 'data/app_preferences.dart';
 import 'data/dao/impl/account_dao_impl.dart';

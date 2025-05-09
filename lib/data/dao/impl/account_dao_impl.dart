@@ -35,8 +35,8 @@ class AccountDaoImpl extends AccountDao {
       'coin': entity.coin,
       'index': entity.index,
       'selected': entity.selected,
-      'createdAt': DateTime.now().millisecondsSinceEpoch,
-      'updatedAt': DateTime.now().millisecondsSinceEpoch,
+      'createdAt': entity.createdAt.millisecondsSinceEpoch,
+      'updatedAt': entity.updatedAt.millisecondsSinceEpoch,
     };
     if (results.isNotEmpty) {
       final createdAt = results.first['createdAt'];

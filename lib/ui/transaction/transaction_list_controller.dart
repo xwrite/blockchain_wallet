@@ -1,4 +1,4 @@
-import 'package:blockchain_wallet/common/int_paging_controller.dart';
+import 'package:blockchain_wallet/common/utils/int_paging_controller.dart';
 import 'package:blockchain_wallet/data/api/web3_provider.dart';
 import 'package:blockchain_wallet/data/app_database.dart';
 import 'package:blockchain_wallet/data/entity/transaction_entity.dart';

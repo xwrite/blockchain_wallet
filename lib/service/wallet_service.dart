@@ -85,8 +85,8 @@ class WalletService extends GetxService {
       coin: TWCoinType.Ethereum.coin,
       index: 0,
       selected: 1,
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-      updatedAt: DateTime.now().millisecondsSinceEpoch,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
     );
     await _accountRepository.saveAccount(account);
     _account = account;
