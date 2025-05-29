@@ -1,11 +1,13 @@
 
+import 'dart:async';
+
 import 'package:blockchain_wallet/common/utils/result.dart';
 import 'package:flutter/foundation.dart';
 
 abstract class WalletRepository extends ChangeNotifier {
 
   ///是否已创建钱包
-  Future<bool> get isCreated;
+  FutureOr<bool> get isCreated;
 
   ///创建钱包
   ///- name 钱包名称
