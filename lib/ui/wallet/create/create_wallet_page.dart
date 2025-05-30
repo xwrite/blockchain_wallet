@@ -18,7 +18,7 @@ class CreateWalletPage extends StatefulWidget {
 }
 
 class _CreateWalletPageState extends State<CreateWalletPage> {
-  final accountNameController = TextEditingController(text: '钱包');
+  late final accountNameController = TextEditingController(text: viewModel.name);
   final passwordController = TextEditingController();
   final passwordAgainController = TextEditingController();
 
@@ -76,9 +76,9 @@ class _CreateWalletPageState extends State<CreateWalletPage> {
                 child: ListenableBuilder(
                     listenable: viewModel,
                     builder: (_, __) {
-                      final isFormValid = viewModel.isFormValid;
+                      final valid = viewModel.valid;
                       return FilledButton(
-                        onPressed: isFormValid
+                        onPressed: valid
                             ? () => viewModel.create.execute((
                                   accountNameController.text,
                                   passwordController.text,
