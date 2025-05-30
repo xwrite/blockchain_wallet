@@ -1,28 +1,66 @@
 import 'package:blockchain_wallet/common/utils/password_validator.dart';
-import 'package:blockchain_wallet/global.dart';
+import 'package:blockchain_wallet/common/utils/result.dart';
+import 'package:blockchain_wallet/routing/routes.dart';
 import 'package:blockchain_wallet/widget/widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:secure_content/secure_content.dart';
+import 'package:go_router/go_router.dart';
 
-import 'create_wallet_controller.dart';
-import 'create_wallet_state.dart';
+import 'create_wallet_view_model.dart';
 
 ///创建钱包
-class CreateWalletPage extends StatelessWidget {
-  CreateWalletPage({super.key});
+class CreateWalletPage extends StatefulWidget {
+  final CreateWalletViewModel viewModel;
 
-  final CreateWalletController controller = Get.put(CreateWalletController());
-  final CreateWalletState state = Get.find<CreateWalletController>().state;
+  const CreateWalletPage({super.key, required this.viewModel});
+
+  @override
+  State<CreateWalletPage> createState() => _CreateWalletPageState();
+}
+
+class _CreateWalletPageState extends State<CreateWalletPage> {
+  final accountNameController = TextEditingController(text: '钱包');
+  final passwordController = TextEditingController();
+  final passwordAgainController = TextEditingController();
+
+  CreateWalletViewModel get viewModel => widget.viewModel;
+
+  @override
+  void initState() {
+    accountNameController.addListener(() {
+      viewModel.name = accountNameController.text;
+    });
+    passwordController.addListener(() {
+      viewModel.password = passwordController.text;
+    });
+    passwordAgainController.addListener(() {
+      viewModel.passwordAgain = passwordAgainController.text;
+    });
+    viewModel.create.addListener((){
+      switch(viewModel.create.result){
+        case Ok<void>():
+          Loading.dismiss();
+          Toast.show('创建成功');
+          context.go(Routes.home);
+          break;
+        case Error<void>():
+          Loading.dismiss();
+          Toast.show('创建失败');
+          break;
+        case _:
+          Loading.show();
+          break;
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(Global.text.createWallet),
+        title: Text('创建钱包'),
       ),
       body: Form(
-        key: controller.formKey,
         autovalidateMode: AutovalidateMode.onUnfocus,
         child: SingleChildScrollView(
           padding: XEdgeInsets(all: 16),
@@ -35,13 +73,20 @@ class CreateWalletPage extends StatelessWidget {
               Container(
                 padding: XEdgeInsets(top: 24),
                 width: double.infinity,
-                child: Obx(() {
-                  return FilledButton(
-                    onPressed:
-                        state.isFormReadyRx() ? controller.onTapConfirm : null,
-                    child: Text('创建钱包'),
-                  );
-                }),
+                child: ListenableBuilder(
+                    listenable: viewModel,
+                    builder: (_, __) {
+                      final isFormValid = viewModel.isFormValid;
+                      return FilledButton(
+                        onPressed: isFormValid
+                            ? () => viewModel.create.execute((
+                                  accountNameController.text,
+                                  passwordController.text,
+                                ))
+                            : null,
+                        child: Text('创建钱包'),
+                      );
+                    }),
               ),
             ],
           ),
@@ -52,48 +97,55 @@ class CreateWalletPage extends StatelessWidget {
 
   Widget buildAccountNameField() {
     return buildTextField(
-      controller: controller.accountNameFieldController,
+      controller: accountNameController,
       labelText: '账户名称',
       maxLength: 14,
-      validator: controller.accountNameValidator,
+      validator: viewModel.accountNameValidator,
     );
   }
 
   Widget buildPasswordField() {
-    return Obx(() {
-      final passwordConditions = state.passwordConditionsRx();
-      return Column(
-        spacing: 4,
-        children: [
-          buildTextField(
-            controller: controller.passwordFieldController,
-            obscureText: true,
-            maxLength: 32,
-            labelText: '请设置密码',
-          ),
-          Row(
-            spacing: 8,
-            children: PasswordConditionEnum.values.map((element) {
-              return Chip(
-                label: Text(element.label),
-                labelStyle: passwordConditions.contains(element)
-                    ? TextStyle(color: Colors.green)
-                    : TextStyle(color: Colors.black38),
-              );
-            }).toList(growable: false),
-          ),
-        ],
-      );
-    });
+    return Column(
+      spacing: 4,
+      children: [
+        buildTextField(
+          controller: passwordController,
+          obscureText: true,
+          maxLength: 32,
+          labelText: '请设置密码',
+        ),
+        ListenableBuilder(
+          listenable: viewModel,
+          builder: (_, __) {
+            final passwordConditions = viewModel.passwordConditions;
+            return Row(
+              spacing: 8,
+              children: PasswordConditionEnum.values.map((element) {
+                return Chip(
+                  label: Text(element.label),
+                  padding: XEdgeInsets(all: 4),
+                  labelStyle: passwordConditions.contains(element)
+                      ? TextStyle(color: Colors.green)
+                      : TextStyle(color: Colors.black38),
+                );
+              }).toList(growable: false),
+            );
+          },
+        ),
+      ],
+    );
   }
 
   Widget buildPasswordAgainField() {
     return buildTextField(
-      controller: controller.passwordAgainFieldController,
+      controller: passwordAgainController,
       obscureText: true,
       maxLength: 32,
       labelText: '请再次输入密码',
-      validator: controller.passwordAgainValidator,
+      validator: (value) => viewModel.passwordAgainValidator(
+        value,
+        passwordAgainController.text,
+      ),
     );
   }
 
@@ -127,5 +179,13 @@ class CreateWalletPage extends StatelessWidget {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    accountNameController.dispose();
+    passwordController.dispose();
+    passwordAgainController.dispose();
+    super.dispose();
   }
 }

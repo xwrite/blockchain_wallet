@@ -20,7 +20,7 @@ abstract class Command<T> extends ChangeNotifier{
 
   bool get error => _result is Error;
 
-  bool get ok => _result is Ok;
+  bool get completed => _result is Ok;
 
 
   void clear(){

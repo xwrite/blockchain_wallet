@@ -35,13 +35,10 @@ final routeConfigs = [
   GetPage(name: kWalletPage, page: () => WalletPage()),
 
   //主页
-  GetPage(name: kHomePage, page: () => HomePage()),
+  // GetPage(name: kHomePage, page: () => HomePage()),
 
   //验证密码
   GetPage(name: kAuthenticationPage, page: () => AuthenticationPage()),
-
-  //创建钱包
-  GetPage(name: kCreateWalletPage, page: () => CreateWalletPage()),
 
   //导入钱包
   GetPage(name: kImportWalletPage, page: () => ImportWalletPage()),
